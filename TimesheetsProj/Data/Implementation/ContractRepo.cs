@@ -1,4 +1,5 @@
-﻿using TimesheetsProj.Data.Ef;
+﻿using Microsoft.EntityFrameworkCore;
+using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Models.Entities;
 
@@ -13,19 +14,23 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = dbContext;
         }
 
-        public Task<Contract> GetItem(Guid id)
+        public async Task<Contract> GetItem(Guid id)
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Contracts.FindAsync(id);
+            return result;
         }
 
-        public Task<IEnumerable<Contract>> GetItems()
+        public async Task<IEnumerable<Contract>> GetItems()
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Contracts.ToListAsync();
+
+            return result;
         }
 
-        public Task Add(Contract item)
+        public async Task Add(Contract item)
         {
-            throw new NotImplementedException();
+            await _dbContext.Contracts.AddAsync(item);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task Update(Contract item)
