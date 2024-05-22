@@ -39,7 +39,6 @@ namespace TimesheetsProj.Data.Implementation
             await _dbContext.SaveChangesAsync();
         }
 
-
         public async Task<bool?> CheckContractIsActive(Guid id)
         {
             var contract = await _dbContext.Contracts.FindAsync(id);

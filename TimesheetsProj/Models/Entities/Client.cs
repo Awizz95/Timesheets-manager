@@ -4,8 +4,8 @@
     public class Client : Entity
     {
         public Guid Id { get; set; }
-        public Guid User { get; set; }
+        public Guid UserId { get; set; }
         public bool IsDeleted { get; set; }
-        public ICollection<Contract>? Contract { get; set; }
+        public ICollection<Contract>? Contracts { get; set; }
     }
 }

@@ -7,42 +7,42 @@ namespace TimesheetsProj.Data.Implementation
 {
     public class SheetRepo : ISheetRepo
     {
-        private readonly TimesheetDbContext _context;
+        private readonly TimesheetDbContext _dbContext;
 
         public SheetRepo(TimesheetDbContext context)
         {
-            _context = context;
+            _dbContext = context;
         }
 
         public async Task<Sheet> GetItem(Guid id)
         {
-            var result = await _context.Sheets.FindAsync(id);
+            var result = await _dbContext.Sheets.FindAsync(id);
 
             return result;
         }
 
         public async Task<IEnumerable<Sheet>> GetItems()
         {
-            var result = await _context.Sheets.ToListAsync();
+            var result = await _dbContext.Sheets.ToListAsync();
 
             return result;
         }
 
         public async Task Add(Sheet item)
         {
-            await _context.Sheets.AddAsync(item);
-            await _context.SaveChangesAsync();
+            await _dbContext.Sheets.AddAsync(item);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task Update(Sheet item)
         {
-            _context.Sheets.Update(item);
-            await _context.SaveChangesAsync();
+            _dbContext.Sheets.Update(item);
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<Sheet>> GetItemsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd)
         {
-            var sheets = await _context.Sheets
+            var sheets = await _dbContext.Sheets
                 .Where(x => x.ContractId == contractId)
                 .Where(x => x.Date >= dateStart && x.Date <= dateEnd)
                 .ToListAsync();

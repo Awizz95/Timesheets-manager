@@ -1,28 +1,58 @@
-﻿using TimesheetsProj.Data.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using TimesheetsProj.Data.Ef;
+using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Data.Implementation
 {
     public class ClientRepo : IClientRepo
     {
-        public Task Add(Client item)
+        private readonly TimesheetDbContext _dbContext;
+
+        public ClientRepo(TimesheetDbContext dbContext)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
         }
 
-        public Task<Client> GetItem(Guid id)
+        public async Task Add(Client item)
         {
-            throw new NotImplementedException();
+            await _dbContext.Clients.AddAsync(item);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Client>> GetItems()
+        public async Task<Client> GetItem(Guid id)
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Clients.FindAsync(id);
+            return result;
         }
 
-        public Task Update(Client item)
+        public async Task<IEnumerable<Client>> GetItems()
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Clients.ToListAsync();
+
+            return result;
+        }
+
+        public async Task Update(Client item)
+        {
+            _dbContext.Clients.Update(item);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> CheckClientIsDeleted(Guid id)
+        {
+            var client = await _dbContext.Clients.Where(x => x.Id == id).SingleAsync();
+            var status = client.IsDeleted;
+
+            return status;
+        }
+
+        public async Task<IEnumerable<Contract>?> GetAllContracts(Guid id)
+        {
+            var client = await GetItem(id);
+            var contracts = client.Contracts;
+
+            return contracts;
         }
     }
 }

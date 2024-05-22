@@ -1,4 +1,5 @@
-﻿using TimesheetsProj.Data.Ef;
+﻿using Microsoft.EntityFrameworkCore;
+using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Models.Entities;
 
@@ -6,34 +7,51 @@ namespace TimesheetsProj.Data.Implementation
 {
     public class InvoiceRepo : IInvoiceRepo
     {
-        private readonly TimesheetDbContext _context;
+        private readonly TimesheetDbContext _dbContext;
 
         public InvoiceRepo(TimesheetDbContext context)
         {
-            _context = context;
+            _dbContext = context;
         }
 
-        public Task<Invoice> GetItem(Guid id)
+        public async Task<Invoice> GetItem(Guid id)
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Invoices.FindAsync(id);
+
+            return result;
         }
 
-        public Task<IEnumerable<Invoice>> GetItems()
+        public async Task<IEnumerable<Invoice>> GetItems()
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.Invoices.ToListAsync();
+
+            return result;
         }
 
         public async Task Add(Invoice item)
         {
-
-
-            await _context.Invoices.AddAsync(item);
-            await _context.SaveChangesAsync();
+            await _dbContext.Invoices.AddAsync(item);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public Task Update(Invoice item)
+        public async Task Update(Invoice item)
         {
-            throw new NotImplementedException();
+            _dbContext.Invoices.Update(item);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Contract> GetContract(Guid id)
+        {
+            var service = await _dbContext.Invoices.FindAsync(id);
+            var contract = service.Contract;
+            return contract;
+        }
+
+        public async Task<IEnumerable<Sheet>> GetSheets(Guid id)
+        {
+            var service = await _dbContext.Invoices.FindAsync(id);
+            var sheets = service.Sheets;
+            return sheets;
         }
     }
 }
