@@ -1,5 +1,6 @@
 ﻿using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
+using TimesheetsProj.Domain.Mapper;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -14,27 +15,33 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             _contractRepo = contractRepo;
         }
 
-        public Task<Guid> Create(ContractRequest request)
+        public async Task<Guid> Create(ContractRequest request)
         {
-            throw new NotImplementedException();
+            Contract contract = ContractMapper.ContractRequestToContract(request);
+            await _contractRepo.Add(contract);
+
+            return contract.Id;
         }
 
-        public Task<Contract> GetItem(Guid id)
+        public async Task<Contract> GetItem(Guid contractId)
         {
-            throw new NotImplementedException();
+            var contract = await _contractRepo.GetItem(contractId);
+            return contract;
         }
 
-        public Task<IEnumerable<Contract>> GetItems()
+        public async Task<IEnumerable<Contract>> GetItems()
         {
-            throw new NotImplementedException();
+            var contracts = await _contractRepo.GetItems();
+            return contracts;
         }
 
-        public Task Update(Guid id, ContractRequest request)
+        public async Task Update(Guid contractId, ContractRequest request)
         {
-            throw new NotImplementedException();
+            var contract = ContractMapper.ContractRequestToContract(request);
+            await _contractRepo.Update(contractId, contract);
         }
 
-        public async Task<bool?> CheckContractIsActive(Guid id)
+        public async Task<bool> CheckContractIsActive(Guid id)
         {
             return await _contractRepo.CheckContractIsActive(id);
         }

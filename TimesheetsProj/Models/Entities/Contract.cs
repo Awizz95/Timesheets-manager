@@ -1,4 +1,6 @@
-﻿namespace TimesheetsProj.Models.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace TimesheetsProj.Models.Entities
 {
     /// Информация о договоре с клиентом
     public class Contract : Entity
@@ -9,6 +11,6 @@
         public DateTime DateEnd { get; set; }
         public string Description { get; set; }
         public bool IsDeleted { get; set; }
-        public ICollection<Sheet> Sheets { get; set; }
+        public ICollection<Sheet>? Sheets { get; set; }
     }
 }

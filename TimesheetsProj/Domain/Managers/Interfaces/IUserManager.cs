@@ -5,10 +5,9 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
 {
     public interface IUserManager
     {
-        /// <summary> Возвращает пользователя по логину и паролю </summary>
-        Task<User> GetUser(LoginRequest request);
-
-        /// <summary> Создает нового пользователя </summary>
+        Task<User?> GetUserByRequest(LoginRequest request);
         Task<Guid> CreateUser(CreateUserRequest request);
+        Task Update(Guid userId, UpdateUserRequest request);
+        Task<User?> GetUserById(Guid userId);
     }
 }

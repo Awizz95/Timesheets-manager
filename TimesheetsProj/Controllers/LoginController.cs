@@ -21,7 +21,7 @@ namespace TimesheetsProj.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _userManager.GetUser(request);
+            var user = await _userManager.GetUserByRequest(request);
 
             if (user == null)
             {

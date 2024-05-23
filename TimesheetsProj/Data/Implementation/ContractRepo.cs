@@ -27,19 +27,27 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task Add(Contract item)
+        public async Task<int> Add(Contract item)
         {
             await _dbContext.Contracts.AddAsync(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
-        public async Task Update(Contract item)
+        public async Task<int> Update(Guid contractId, Contract item)
         {
-            _dbContext.Contracts.Update(item);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.Contracts.Where(x => x.Id == contractId).ExecuteUpdateAsync(x => x
+                .SetProperty(x => x.Title, item.Title)
+                .SetProperty(x => x.Description, item.Description)
+                .SetProperty(x => x.DateStart, item.DateStart)
+                .SetProperty(x => x.DateEnd, item.DateEnd));
+
+            int result = await _dbContext.SaveChangesAsync();
+
+            return result;
         }
 
-        public async Task<bool?> CheckContractIsActive(Guid id)
+        public async Task<bool> CheckContractIsActive(Guid id)
         {
             var contract = await _dbContext.Contracts.FindAsync(id);
             var now = DateTime.Now;

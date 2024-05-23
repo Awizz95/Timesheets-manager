@@ -28,16 +28,18 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task Add(Sheet item)
+        public async Task<int> Add(Sheet item)
         {
             await _dbContext.Sheets.AddAsync(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
-        public async Task Update(Sheet item)
+        public async Task<int> Update(Guid sheetId, Sheet item)
         {
             _dbContext.Sheets.Update(item);
-            await _dbContext.SaveChangesAsync();
+            int result= await _dbContext.SaveChangesAsync();
+            return result;
         }
 
         public async Task<IEnumerable<Sheet>> GetItemsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd)

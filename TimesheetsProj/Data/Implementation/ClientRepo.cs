@@ -14,10 +14,11 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = dbContext;
         }
 
-        public async Task Add(Client item)
+        public async Task<int> Add(Client item)
         {
             await _dbContext.Clients.AddAsync(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
         public async Task<Client> GetItem(Guid id)
@@ -33,10 +34,11 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task Update(Client item)
+        public async Task<int> Update(Guid clientId, Client item)
         {
             _dbContext.Clients.Update(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
         public async Task<bool> CheckClientIsDeleted(Guid id)

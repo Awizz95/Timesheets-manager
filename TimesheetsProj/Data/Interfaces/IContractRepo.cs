@@ -4,6 +4,6 @@ namespace TimesheetsProj.Data.Interfaces
 {
     public interface IContractRepo : IRepoBase<Contract>
     {
-        Task<bool?> CheckContractIsActive(Guid id);
+        Task<bool> CheckContractIsActive(Guid id);
     }
 }

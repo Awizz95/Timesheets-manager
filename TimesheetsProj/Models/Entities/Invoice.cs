@@ -5,15 +5,14 @@ namespace TimesheetsProj.Models.Entities
 {
     public class Invoice : Entity
     {
-        public Guid Id { get; protected set; }
-        public Guid ContractId { get; protected set; }
-        public DateTime DateStart { get; protected set; }
-        public DateTime DateEnd { get; protected set; }
+        public Guid Id { get; set; }
+        public Guid ContractId { get; set; }
+        public DateTime DateStart { get; set; }
+        public DateTime DateEnd { get; set; }
 
         [NotMapped] //доделать
-        public Money Sum { get; protected set; }
-        public Contract Contract { get; protected set; }
+        public Money Sum { get; set; }
+        public Contract Contract { get; set; }
         public List<Sheet> Sheets { get; set; } = new List<Sheet>();
-        protected Invoice() { }
     }
 }

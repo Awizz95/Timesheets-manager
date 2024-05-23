@@ -3,15 +3,15 @@
     /// Информация о затраченном времени сотрудника
     public class Sheet : Entity
     {
-        public Guid Id { get; protected set; }
-        public DateTime Date { get; protected set; }
-        public Guid EmployeeId { get; protected set; }
-        public Guid ContractId { get; protected set; }
-        public Guid ServiceId { get; protected set; }
-        public Guid? InvoiceId { get; protected set; }
-        public int Amount { get; protected set; }
-        public bool IsApproved { get; protected set; }
-        public DateTime ApprovedDate { get; protected set; }
+        public Guid Id { get; set; }
+        public DateTime Date { get; set; }
+        public Guid EmployeeId { get; set; }
+        public Guid ContractId { get; set; }
+        public Guid ServiceId { get; set; }
+        public Guid? InvoiceId { get; set; }
+        public int Amount { get; set; }
+        public bool IsApproved { get; set; }
+        public DateTime ApprovedDate { get; set; }
 
         public Employee Employee { get; set; }
         public Contract Contract { get; set; }

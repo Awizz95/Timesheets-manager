@@ -14,10 +14,11 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = dbContext;
         }
 
-        public async Task Add(Employee item)
+        public async Task<int> Add(Employee item)
         {
             await _dbContext.Employees.AddAsync(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
         public async Task<Employee?> GetItem(Guid id)
@@ -33,10 +34,11 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task Update(Employee item)
+        public async Task<int> Update(Guid employeeId, Employee item)
         {
             _dbContext.Employees.Update(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
         public async Task<bool> CheckEmployeeIsDeleted(Guid id)

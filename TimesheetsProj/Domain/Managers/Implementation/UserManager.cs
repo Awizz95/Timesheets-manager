@@ -2,6 +2,7 @@
 using System.Text;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
+using TimesheetsProj.Domain.Mappers;
 using TimesheetsProj.Infrastructure.Extensions;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
@@ -17,42 +18,72 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             _userRepo = userRepo;
         }
 
-        public async Task<User> GetUser(LoginRequest request)
+        public async Task<User?> GetUserByRequest(LoginRequest request)
         {
-            var passwordHash = GetPasswordHash(request.Password);
-            var user = await _userRepo.GetByLoginAndPasswordHash(request.Login, passwordHash);
+            byte[] passwordHash = GetPasswordHash(request.Password);
+            User? user = await _userRepo.GetByLoginAndPasswordHash(request.Login, passwordHash);
 
-            return user;
+            if (user is not null) return user;
+
+            throw new InvalidOperationException("Ошибка при получении пользователя!");
+        }
+
+        public async Task<User?> GetUserById(Guid userId)
+        {
+            User? user = await _userRepo.GetByUserId(userId);
+
+            if (user is not null) return user;
+
+            throw new InvalidOperationException("Ошибка при получении пользователя!");
         }
 
         public async Task<Guid> CreateUser(CreateUserRequest request)
         {
-            request.EnsureNotNull(nameof(request));
-
-            var userRoleNames = await _userRepo.GetUserRoleNamesAsync();
+            string[] userRoleNames = await _userRepo.GetUserRoleNamesAsync();
 
             if (!userRoleNames.Contains(request.Role)) throw new ApplicationException("Введеная роль не существует!");
 
-            var user = new User
-            {
-                Id = Guid.NewGuid(),
-                Username = request.Username,
-                PasswordHash = GetPasswordHash(request.Password),
-                Role = request.Role
-
-            };
-
+            User user = UserMapper.CreateUserRequestToUser(request);
             await _userRepo.CreateUser(user);
 
             return user.Id;
         }
 
-        private static byte[] GetPasswordHash(string password)
+        public static byte[] GetPasswordHash(string password)
         {
             using (var sha1 = new SHA1CryptoServiceProvider())   // переделать
             {
                 return sha1.ComputeHash(Encoding.Unicode.GetBytes(password));
             }
+        }
+
+        private async Task<bool> IsPasswordCorrect(string password, Guid userId)
+        {
+
+            byte[] passwordHash = GetPasswordHash(password);
+            User? user = await _userRepo.GetByUserId(userId);
+
+            if (user is null) throw new InvalidOperationException($"Пользователь с id: {userId} не найден!");
+
+            bool result = user.PasswordHash == passwordHash;
+
+            return result;
+
+        }
+
+        public async Task Update(Guid userId, UpdateUserRequest request)
+        {
+            bool isOldPasswordCorrect = await IsPasswordCorrect(request.OldPassword, userId);
+
+            if (!isOldPasswordCorrect) throw new InvalidOperationException("Действующий пароль не совпадает!");
+
+            string[] userRoleNames = await _userRepo.GetUserRoleNamesAsync();
+
+            if (!userRoleNames.Contains(request.Role)) throw new ApplicationException("Введеная роль не существует!");
+
+            User user = UserMapper.UpdateUserRequestToUser(userId,request);
+
+            await _userRepo.Update(user);
         }
     }
 }

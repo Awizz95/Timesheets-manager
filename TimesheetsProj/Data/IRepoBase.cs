@@ -4,7 +4,7 @@
     {
         Task<T> GetItem(Guid id);
         Task<IEnumerable<T>> GetItems();
-        Task Add(T item);
-        Task Update(T item);
+        Task<int> Add(T item);
+        Task<int> Update(Guid id, T item);
     }
 }

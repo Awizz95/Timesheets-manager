@@ -28,16 +28,18 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task Add(Service item)
+        public async Task<int> Add(Service item)
         {
             await _dbContext.Services.AddAsync(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
-        public async Task Update(Service item)
+        public async Task<int> Update(Guid serviceId, Service item)
         {
             _dbContext.Services.Update(item);
-            await _dbContext.SaveChangesAsync();
+            int result = await _dbContext.SaveChangesAsync();
+            return result;
         }
 
         public async Task<IEnumerable<Sheet>> GetSheets(Guid id)
