@@ -14,31 +14,42 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = dbContext;
         }
 
-        public async Task<int> Add(Employee item)
+        public async Task Create(User user)
         {
-            await _dbContext.Employees.AddAsync(item);
-            int result = await _dbContext.SaveChangesAsync();
-            return result;
+            Employee employee = new Employee
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Sheets = [],
+                IsDeleted = false
+            };
+
+            await _dbContext.Employees.AddAsync(employee);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Employee?> GetItem(Guid id)
+        public async Task<Employee?> Get(Guid id)
         {
             var result = await _dbContext.Employees.FindAsync(id);
+
             return result;
         }
 
-        public async Task<IEnumerable<Employee>> GetItems()
+        public async Task<IEnumerable<Employee>?> GetAll()
         {
             var result = await _dbContext.Employees.ToListAsync();
 
             return result;
         }
 
-        public async Task<int> Update(Guid employeeId, Employee item)
+        public async Task Update(Employee employee)
         {
-            _dbContext.Employees.Update(item);
-            int result = await _dbContext.SaveChangesAsync();
-            return result;
+            await _dbContext.Employees.Where(x => x.Id == employee.Id).ExecuteUpdateAsync(x => x
+.SetProperty(x => x.UserId, employee.UserId)
+.SetProperty(x => x.Sheets, employee.Sheets)
+.SetProperty(x => x.IsDeleted, employee.IsDeleted));
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> CheckEmployeeIsDeleted(Guid id)
@@ -51,7 +62,7 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<IEnumerable<Sheet>?> GetAllSheets(Guid id)
         {
-            var employee = await GetItem(id);
+            var employee = await Get(id);
             var sheets = employee.Sheets;
 
             return sheets;

@@ -3,8 +3,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Infrastructure.Extensions;
-using TimesheetsProj.Models.Dto;
 using TimesheetsProj.Models.Dto.Authentication;
+using TimesheetsProj.Models.Dto.Responses;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Domain.Managers.Implementation
@@ -20,19 +20,20 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<LoginResponse> Authenticate(User user)
         {
-            var claims = new List<Claim>
+            List<Claim> claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
             };
 
-            var accessTokenRaw = _jwtAccessOptions.GenerateToken(claims);
-            var securityHandler = new JwtSecurityTokenHandler();
-            var accessToken = securityHandler.WriteToken(accessTokenRaw);
+            JwtSecurityToken accessTokenRaw = _jwtAccessOptions.GenerateToken(claims);
+            JwtSecurityTokenHandler securityHandler = new JwtSecurityTokenHandler();
+            string accessToken = securityHandler.WriteToken(accessTokenRaw);
 
-            var loginResponse = new LoginResponse()
+            LoginResponse loginResponse = new LoginResponse()
             {
+                username = user.Username,
                 AccessToken = accessToken,
                 ExpiresIn = accessTokenRaw.ValidTo.ToEpochTime()
             };

@@ -14,37 +14,35 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = dbContext;
         }
 
-        public async Task<Contract> GetItem(Guid id)
+        public async Task<Contract?> Get(Guid id)
         {
-            var result = await _dbContext.Contracts.FindAsync(id);
-            return result;
-        }
-
-        public async Task<IEnumerable<Contract>> GetItems()
-        {
-            var result = await _dbContext.Contracts.ToListAsync();
+            Contract? result = await _dbContext.Contracts.FindAsync(id);
 
             return result;
         }
 
-        public async Task<int> Add(Contract item)
+        public async Task<IEnumerable<Contract>?> GetAll()
+        {
+            List<Contract> result = await _dbContext.Contracts.ToListAsync();
+
+            return result;
+        }
+
+        public async Task Create(Contract item)
         {
             await _dbContext.Contracts.AddAsync(item);
-            int result = await _dbContext.SaveChangesAsync();
-            return result;
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<int> Update(Guid contractId, Contract item)
+        public async Task Update(Contract contract)
         {
-            await _dbContext.Contracts.Where(x => x.Id == contractId).ExecuteUpdateAsync(x => x
-                .SetProperty(x => x.Title, item.Title)
-                .SetProperty(x => x.Description, item.Description)
-                .SetProperty(x => x.DateStart, item.DateStart)
-                .SetProperty(x => x.DateEnd, item.DateEnd));
+            await _dbContext.Contracts.Where(x => x.Id == contract.Id).ExecuteUpdateAsync(x => x
+                .SetProperty(x => x.Title, contract.Title)
+                .SetProperty(x => x.Description, contract.Description)
+                .SetProperty(x => x.DateStart, contract.DateStart)
+                .SetProperty(x => x.DateEnd, contract.DateEnd));
 
-            int result = await _dbContext.SaveChangesAsync();
-
-            return result;
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> CheckContractIsActive(Guid id)

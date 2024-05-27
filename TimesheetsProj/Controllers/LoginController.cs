@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.ValueObjects;
+using TimesheetsProj.Infrastructure.Extensions;
 using TimesheetsProj.Models.Dto.Requests;
+using TimesheetsProj.Models.Dto.Responses;
+using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Controllers
 {
@@ -21,14 +24,12 @@ namespace TimesheetsProj.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _userManager.GetUserByRequest(request);
+            request.EnsureNotNull(nameof(request));
+            User? user = await _userManager.GetUserByRequest(request);
 
-            if (user == null)
-            {
-                return Unauthorized();
-            }
+            if (user is null) return Unauthorized();
 
-            var loginResponse = await _loginManager.Authenticate(user);
+            LoginResponse loginResponse = await _loginManager.Authenticate(user);
 
             return Ok(loginResponse);
         }

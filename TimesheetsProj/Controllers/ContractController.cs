@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Text.Json;
 using TimesheetsProj.Domain.Managers.Implementation;
 using TimesheetsProj.Domain.Managers.Interfaces;
+using TimesheetsProj.Infrastructure.Extensions;
 using TimesheetsProj.Models.Dto.Requests;
+using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Controllers
 {
@@ -22,48 +25,60 @@ namespace TimesheetsProj.Controllers
         [HttpGet]
         public IActionResult Get([FromQuery] Guid id)
         {
-            var result = _contractManager.GetItem(id);
+            Task<Contract> result;
 
-            if (result is null) return NotFound();
+            try
+            {
+                result = _contractManager.Get(id);
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
 
-            var json = JsonSerializer.Serialize(result);
+            string json = JsonSerializer.Serialize(result);
 
             return Ok(json);
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _contractManager.GetItems();
+            IEnumerable<Contract> result;
 
-            if (result is null) return NotFound();
+            try
+            {
+                result = await _contractManager.GetAll();
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
 
             return Ok(result);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ContractRequest request)
         {
-            var id = await _contractManager.Create(request);
-
-            if (id == default) return BadRequest();
+            request.EnsureNotNull(nameof(request));
+            Guid id = await _contractManager.Create(request);
 
             return Ok(id);
         }
 
-
         [HttpPut("{contractId}")]
         public async Task<IActionResult> Update([FromRoute] Guid contractId, [FromBody] ContractRequest request)
         {
-            var isAllowedToCreate = await _contractManager.CheckContractIsActive(contractId);
+            bool isAllowedToUpdate = await _contractManager.CheckContractIsActive(contractId);
 
-            if (!(bool)isAllowedToCreate)
+            if (!(bool)isAllowedToUpdate)
             {
                 return BadRequest($"Contract {contractId} is not active or not found.");
             }
 
-            await _contractManager.Update(contractId, request);
+            await _contractManager.Update(request);
 
             return Ok();
         }

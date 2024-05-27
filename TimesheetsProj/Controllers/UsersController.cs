@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TimesheetsProj.Domain.Managers.Interfaces;
@@ -9,6 +10,7 @@ using TimesheetsProj.Models.Entities;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]/[Action]")]
     public class UsersController : ControllerBase
     {
@@ -24,13 +26,15 @@ namespace TimesheetsProj.Controllers
         {
             User? user = await _userManager.GetUserById(userId);
 
-            if (user is null) throw new InvalidOperationException("Пользователь не найден!");
+            if (user is null) return NotFound();
 
             var json = JsonSerializer.Serialize(user);
 
             return Ok(json);
         }
+
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
             request.EnsureNotNull(nameof(request));

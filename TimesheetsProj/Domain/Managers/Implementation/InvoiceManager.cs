@@ -2,6 +2,7 @@
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mapper;
 using TimesheetsProj.Models.Dto.Requests;
+using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Domain.Managers.Implementation
 {
@@ -16,13 +17,12 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<Guid> Create(InvoiceRequest request)
         {
-            var invoice = InvoiceMapper.InvoiceRequestToInvoice(request);
+            Invoice invoice = InvoiceMapper.InvoiceRequestToInvoice(request);
 
-            var sheetsToInclude = await _invoiceRepo
-                .GetSheets(invoice.Id);
+            IEnumerable<Sheet> sheetsToInclude = await _invoiceRepo.GetSheets(invoice.Id);
 
             //_invoiceRepo.IncludeSheets(sheetsToInclude);
-            await _invoiceRepo.Add(invoice);
+            await _invoiceRepo.Create(invoice);
 
             return invoice.Id;
         }

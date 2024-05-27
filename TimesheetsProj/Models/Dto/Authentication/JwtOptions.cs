@@ -10,15 +10,16 @@ namespace TimesheetsProj.Models.Dto.Authentication
         public string Issuer { get; set; }
         public string Audience { get; set; }
         public string SigningKey { get; set; }
+
         public int Lifetime { get; set; }
 
         public TokenValidationParameters GetTokenValidationParameters()
         {
             return new TokenValidationParameters()
             {
-                ValidateIssuer = false,
+                ValidateIssuer = true,
                 ValidIssuer = Issuer,
-                ValidateAudience = false,
+                ValidateAudience = true,
                 ValidAudience = Audience,
                 ValidateLifetime = true,
                 IssuerSigningKey = GetSymmetricSecurityKey(),
@@ -29,14 +30,15 @@ namespace TimesheetsProj.Models.Dto.Authentication
 
         private SymmetricSecurityKey GetSymmetricSecurityKey()
         {
+
             return new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SigningKey));
         }
 
         public JwtSecurityToken GenerateToken(IEnumerable<Claim> claims)
         {
-            var now = DateTime.UtcNow;
+            DateTime now = DateTime.UtcNow;
 
-            var jwt = new JwtSecurityToken(
+            JwtSecurityToken jwt = new JwtSecurityToken(
                 issuer: Issuer,
                 audience: Audience,
                 notBefore: now,

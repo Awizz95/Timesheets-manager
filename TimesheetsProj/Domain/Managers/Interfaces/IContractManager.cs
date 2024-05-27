@@ -5,10 +5,10 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
 {
     public interface IContractManager
     {
-        Task<Contract> GetItem(Guid id);
-        Task<IEnumerable<Contract>> GetItems();
+        Task<Contract> Get(Guid id);
+        Task<IEnumerable<Contract>> GetAll();
         Task<Guid> Create(ContractRequest request);
-        Task Update(Guid id, ContractRequest request);
+        Task Update(ContractRequest request);
         Task<bool> CheckContractIsActive(Guid id);
     }
 }

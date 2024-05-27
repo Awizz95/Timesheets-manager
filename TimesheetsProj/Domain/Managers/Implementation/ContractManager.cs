@@ -18,27 +18,33 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         public async Task<Guid> Create(ContractRequest request)
         {
             Contract contract = ContractMapper.ContractRequestToContract(request);
-            await _contractRepo.Add(contract);
+            await _contractRepo.Create(contract);
 
             return contract.Id;
         }
 
-        public async Task<Contract> GetItem(Guid contractId)
+        public async Task<Contract> Get(Guid contractId)
         {
-            var contract = await _contractRepo.GetItem(contractId);
-            return contract;
+            Contract? contract = await _contractRepo.Get(contractId);
+
+            if (contract is not null) return contract;
+
+            throw new InvalidOperationException($"Контракт с id: {contractId} не найден!");
         }
 
-        public async Task<IEnumerable<Contract>> GetItems()
+        public async Task<IEnumerable<Contract>> GetAll()
         {
-            var contracts = await _contractRepo.GetItems();
+            IEnumerable<Contract>? contracts = await _contractRepo.GetAll();
+
+            if (!contracts.Any()) throw new InvalidOperationException("Список контрактов пустой!");
+
             return contracts;
         }
 
-        public async Task Update(Guid contractId, ContractRequest request)
+        public async Task Update(ContractRequest request)
         {
             var contract = ContractMapper.ContractRequestToContract(request);
-            await _contractRepo.Update(contractId, contract);
+            await _contractRepo.Update(contract);
         }
 
         public async Task<bool> CheckContractIsActive(Guid id)

@@ -30,7 +30,7 @@ namespace TimesheetsProj.Data.Implementation
                     .FirstOrDefaultAsync();
         }
 
-        public async Task CreateUser(User user)
+        public async Task Create(User user)
         {
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();

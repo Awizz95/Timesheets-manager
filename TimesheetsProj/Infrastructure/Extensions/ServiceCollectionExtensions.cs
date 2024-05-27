@@ -33,17 +33,14 @@ namespace TimesheetsProj.Infrastructure.Extensions
 
             services.AddTransient<ILoginManager, LoginManager>();
 
-            services
-                .AddAuthentication(
-                    x =>
-                    {
+            services.AddAuthentication(x => {
                         x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = jwtSettings.GetTokenValidationParameters();
-                });
+                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;})
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.TokenValidationParameters = jwtSettings.GetTokenValidationParameters();
+                    });
         }
 
         public static void ConfigureDomainManagers(this IServiceCollection services)
@@ -61,6 +58,8 @@ namespace TimesheetsProj.Infrastructure.Extensions
             services.AddScoped<IContractRepo, ContractRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IInvoiceRepo, InvoiceRepo>();
+            services.AddScoped<IClientRepo, ClientRepo>();
+            services.AddScoped<IEmployeeRepo, EmployeeRepo>();
         }
 
         public static void ConfigureBackendSwagger(this IServiceCollection services)

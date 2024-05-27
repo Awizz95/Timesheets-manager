@@ -1,4 +1,4 @@
-﻿using TimesheetsProj.Models.Dto;
+﻿using TimesheetsProj.Models.Dto.Responses;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Domain.Managers.Interfaces

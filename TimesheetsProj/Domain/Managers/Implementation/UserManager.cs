@@ -12,10 +12,14 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     public class UserManager : IUserManager
     {
         private readonly IUserRepo _userRepo;
+        private readonly IClientRepo _clientRepo;
+        private readonly IEmployeeRepo _employeeRepo;
 
-        public UserManager(IUserRepo userRepo)
+        public UserManager(IUserRepo userRepo, IClientRepo clientRepo, IEmployeeRepo employeeRepo)
         {
             _userRepo = userRepo;
+            _clientRepo = clientRepo;
+            _employeeRepo = employeeRepo;
         }
 
         public async Task<User?> GetUserByRequest(LoginRequest request)
@@ -44,8 +48,23 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             if (!userRoleNames.Contains(request.Role)) throw new ApplicationException("Введеная роль не существует!");
 
             User user = UserMapper.CreateUserRequestToUser(request);
-            await _userRepo.CreateUser(user);
 
+            switch (user.Role)
+            {
+                case "User": await _userRepo.Create(user);
+                    break;
+                case "Client":
+                    await _userRepo.Create(user);
+                    await _clientRepo.Create(user);
+                    break;
+                case "Employee":
+                    await _userRepo.Create(user);
+                    await _employeeRepo.Create(user);
+                    break;
+                default:
+                    throw new InvalidOperationException("Выбранная роль недоступна либо не существует!");
+            }; 
+         
             return user.Id;
         }
 
@@ -65,7 +84,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
             if (user is null) throw new InvalidOperationException($"Пользователь с id: {userId} не найден!");
 
-            bool result = user.PasswordHash == passwordHash;
+            bool result = user.PasswordHash.SequenceEqual(passwordHash);
 
             return result;
 

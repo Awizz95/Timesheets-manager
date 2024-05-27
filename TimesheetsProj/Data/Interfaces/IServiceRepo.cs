@@ -2,7 +2,7 @@
 
 namespace TimesheetsProj.Data.Interfaces
 {
-    public interface IServiceRepo : IRepoBase<Service>
+    public interface IServiceRepo
     {
         public Task<IEnumerable<Sheet>> GetSheets(Guid id);
     }

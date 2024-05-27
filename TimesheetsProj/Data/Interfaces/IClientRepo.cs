@@ -2,8 +2,13 @@
 
 namespace TimesheetsProj.Data.Interfaces
 {
-    public interface IClientRepo : IRepoBase<Client>
+    public interface IClientRepo 
     {
-        public Task<bool> CheckClientIsDeleted(Guid id);
+        Task Create(User user);
+        Task<IEnumerable<Client>?> GetAll();
+        Task<Client?> Get(Guid id);
+        Task Update(Client item);
+        Task<IEnumerable<Contract>?> GetAllContracts(Guid id);
+        Task<bool> CheckClientIsDeleted(Guid id);
     }
 }

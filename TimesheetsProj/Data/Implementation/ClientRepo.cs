@@ -14,31 +14,42 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = dbContext;
         }
 
-        public async Task<int> Add(Client item)
+        public async Task Create(User user)
         {
-            await _dbContext.Clients.AddAsync(item);
-            int result = await _dbContext.SaveChangesAsync();
-            return result;
+            Client client = new Client
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Contracts = [],
+                IsDeleted = false
+            };
+
+            await _dbContext.Clients.AddAsync(client);
+            await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Client> GetItem(Guid id)
+        public async Task<Client?> Get(Guid id)
         {
             var result = await _dbContext.Clients.FindAsync(id);
+
             return result;
         }
 
-        public async Task<IEnumerable<Client>> GetItems()
+        public async Task<IEnumerable<Client>?> GetAll()
         {
             var result = await _dbContext.Clients.ToListAsync();
 
             return result;
         }
 
-        public async Task<int> Update(Guid clientId, Client item)
+        public async Task Update(Client client)
         {
-            _dbContext.Clients.Update(item);
-            int result = await _dbContext.SaveChangesAsync();
-            return result;
+            await _dbContext.Clients.Where(x => x.Id == client.Id).ExecuteUpdateAsync(x => x
+    .SetProperty(x => x.UserId, client.UserId)
+    .SetProperty(x => x.Contracts, client.Contracts)
+    .SetProperty(x => x.IsDeleted, client.IsDeleted));
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> CheckClientIsDeleted(Guid id)
@@ -51,7 +62,7 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<IEnumerable<Contract>?> GetAllContracts(Guid id)
         {
-            var client = await GetItem(id);
+            var client = await Get(id);
             var contracts = client.Contracts;
 
             return contracts;
