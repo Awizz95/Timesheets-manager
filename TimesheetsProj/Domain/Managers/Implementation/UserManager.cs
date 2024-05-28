@@ -45,7 +45,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         {
             string[] userRoleNames = await _userRepo.GetUserRoleNamesAsync();
 
-            if (!userRoleNames.Contains(request.Role)) throw new ApplicationException("Введеная роль не существует!");
+            if (!userRoleNames.Contains(request.Role)) throw new InvalidOperationException("Введеная роль не существует!");
 
             User user = UserMapper.CreateUserRequestToUser(request);
 

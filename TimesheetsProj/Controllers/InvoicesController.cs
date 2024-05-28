@@ -5,7 +5,7 @@ using TimesheetsProj.Models.Dto.Requests;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[Action]")]
     public class InvoicesController : TimesheetBaseController
     {
         private readonly IInvoiceManager _invoiceManager;

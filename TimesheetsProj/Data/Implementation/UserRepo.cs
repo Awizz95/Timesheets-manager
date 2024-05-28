@@ -38,7 +38,9 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<string[]> GetUserRoleNamesAsync()
         {
-            return await _dbContext.UserRoles.Select(x => x.Name).ToArrayAsync();
+            string[] result = await _dbContext.UserRoles.Select(x => x.Name).ToArrayAsync();
+
+            return result;
         }
 
         public async Task Update(User user)

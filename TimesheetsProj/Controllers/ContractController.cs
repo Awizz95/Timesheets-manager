@@ -12,6 +12,7 @@ using TimesheetsProj.Models.Entities;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]/[Action]")]
     public class ContractController : TimesheetBaseController
     {
@@ -23,13 +24,13 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get([FromQuery] Guid id)
+        public async Task<IActionResult> Get([FromQuery] Guid id)
         {
-            Task<Contract> result;
+            Contract result;
 
             try
             {
-                result = _contractManager.Get(id);
+                result = await _contractManager.Get(id);
             }
             catch (InvalidOperationException e)
             {
@@ -60,6 +61,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Client")]
         public async Task<IActionResult> Create([FromBody] ContractRequest request)
         {
             request.EnsureNotNull(nameof(request));
@@ -71,7 +73,15 @@ namespace TimesheetsProj.Controllers
         [HttpPut("{contractId}")]
         public async Task<IActionResult> Update([FromRoute] Guid contractId, [FromBody] ContractRequest request)
         {
-            bool isAllowedToUpdate = await _contractManager.CheckContractIsActive(contractId);
+            bool isAllowedToUpdate;
+            try
+            {
+                isAllowedToUpdate = await _contractManager.CheckContractIsActive(contractId);
+            }
+            catch(InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (!(bool)isAllowedToUpdate)
             {

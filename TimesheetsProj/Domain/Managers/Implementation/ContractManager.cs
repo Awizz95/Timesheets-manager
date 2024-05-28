@@ -1,4 +1,5 @@
-﻿using TimesheetsProj.Data.Interfaces;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mapper;
 using TimesheetsProj.Models.Dto.Requests;
@@ -49,7 +50,18 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<bool> CheckContractIsActive(Guid id)
         {
-            return await _contractRepo.CheckContractIsActive(id);
+            bool result;
+
+            try
+            {
+                result = await _contractRepo.CheckContractIsActive(id);
+            }
+            catch(InvalidOperationException)
+            {
+                throw;
+            }
+
+            return result;
         }
     }
 }

@@ -7,6 +7,7 @@ using TimesheetsProj.Models.Entities;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]/[Action]")]
     public class SheetsController : TimesheetBaseController
     {
@@ -37,7 +38,7 @@ namespace TimesheetsProj.Controllers
             
         }
 
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

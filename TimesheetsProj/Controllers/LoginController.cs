@@ -9,7 +9,7 @@ using TimesheetsProj.Models.Entities;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[Action]")]
     public class LoginController : ControllerBase
     {
         private readonly IUserManager _userManager;
@@ -25,20 +25,29 @@ namespace TimesheetsProj.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             request.EnsureNotNull(nameof(request));
-            User? user = await _userManager.GetUserByRequest(request);
+            User? user;
+
+            try
+            {
+                user = await _userManager.GetUserByRequest(request);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (user is null) return Unauthorized();
 
-            LoginResponse loginResponse = await _loginManager.Authenticate(user);
+                LoginResponse loginResponse = await _loginManager.Authenticate(user);
 
-            return Ok(loginResponse);
-        }
+                return Ok(loginResponse);
+            }
 
         //public Task<IActionResult> Refresh()
         //{
         //    var rub100 = Money.FromDecimal(100);
 
-        //    return null;
-        //}
+            //    return null;
+            //}
     }
-}
+    }

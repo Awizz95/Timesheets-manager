@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Contracts;
 using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Models.Entities;
@@ -14,29 +15,34 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = context;
         }
 
-        public async Task<Service> GetItem(Guid id)
+        public async Task<Service> Get(Guid id)
         {
-            var result = await _dbContext.Services.FindAsync(id);
+            Service? result = await _dbContext.Services.FindAsync(id);
+
+            if(result is not null) return result;
+
+            throw new InvalidOperationException("Данная услуга не найдена!");
+        }
+
+        public async Task<IEnumerable<Service>> GetAll()
+        {
+            List<Service> result = await _dbContext.Services.ToListAsync();
 
             return result;
         }
 
-        public async Task<IEnumerable<Service>> GetItems()
+        public async Task Create(Service service)
         {
-            var result = await _dbContext.Services.ToListAsync();
-
-            return result;
-        }
-
-        public async Task Add(Service item)
-        {
-            await _dbContext.Services.AddAsync(item);
+            await _dbContext.Services.AddAsync(service);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Update(Guid serviceId, Service item)
+        public async Task Update(Service service)
         {
-            _dbContext.Services.Update(item);
+            await _dbContext.Services.Where(x => x.Id == service.Id).ExecuteUpdateAsync(x => x
+    .SetProperty(x => x.Name, service.Name)
+    .SetProperty(x => x.Sheets, service.Sheets));
+
             await _dbContext.SaveChangesAsync();
         }
 
@@ -45,6 +51,13 @@ namespace TimesheetsProj.Data.Implementation
             var service = await _dbContext.Services.Where(x => x.Id == id).SingleAsync();
             var sheets = service.Sheets;
             return sheets;
+        }
+
+        public async Task<bool> ServiceExists(Guid id)
+        {
+            bool result = await _dbContext.Services.AnyAsync(e => e.Id == id);
+
+            return result;
         }
     }
 }

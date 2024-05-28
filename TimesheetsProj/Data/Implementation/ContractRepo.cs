@@ -47,9 +47,12 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<bool> CheckContractIsActive(Guid id)
         {
-            var contract = await _dbContext.Contracts.FindAsync(id);
-            var now = DateTime.Now;
-            var isActive = now <= contract?.DateEnd && now >= contract?.DateStart;
+            Contract? contract = await Get(id);
+
+            if (contract is null) throw new InvalidOperationException($"Контракт с id:{id} не найден!");
+
+            DateTime now = DateTime.Now;
+            bool isActive = now <= contract.DateEnd && now >= contract.DateStart;
 
             return isActive;
         }

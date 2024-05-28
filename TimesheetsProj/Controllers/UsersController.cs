@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TimesheetsProj.Domain.Managers.Implementation;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Infrastructure.Extensions;
 using TimesheetsProj.Models.Dto.Requests;
@@ -10,7 +11,7 @@ using TimesheetsProj.Models.Entities;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Route("[controller]/[Action]")]
     public class UsersController : ControllerBase
     {
@@ -24,9 +25,16 @@ namespace TimesheetsProj.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] Guid userId)
         {
-            User? user = await _userManager.GetUserById(userId);
+            User? user;
 
-            if (user is null) return NotFound();
+            try
+            {
+                user = await _userManager.GetUserById(userId);
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
 
             var json = JsonSerializer.Serialize(user);
 
@@ -38,7 +46,16 @@ namespace TimesheetsProj.Controllers
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
             request.EnsureNotNull(nameof(request));
-            var response = await _userManager.CreateUser(request);
+            Guid response;
+
+            try
+            {
+                response = await _userManager.CreateUser(request);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             return Ok(response);
         }
@@ -47,7 +64,15 @@ namespace TimesheetsProj.Controllers
         public async Task<IActionResult> Update([FromQuery] Guid userId, [FromBody] UpdateUserRequest request)
         {
             request.EnsureNotNull(nameof(request));
-            await _userManager.Update(userId, request);
+
+            try
+            {
+                await _userManager.Update(userId, request);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             return Ok();
         }

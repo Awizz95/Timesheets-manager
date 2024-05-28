@@ -24,7 +24,7 @@ namespace TimesheetsProj.Migrations
 
             modelBuilder.Entity("TimesheetsProj.Domain.ValueObjects.Money", b =>
                 {
-                    b.ToTable("Money");
+                    b.ToTable("Money", (string)null);
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Client", b =>
@@ -209,7 +209,7 @@ namespace TimesheetsProj.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Contract", b =>
