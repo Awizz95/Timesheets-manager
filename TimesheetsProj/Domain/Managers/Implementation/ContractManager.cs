@@ -42,9 +42,9 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             return contracts;
         }
 
-        public async Task Update(ContractRequest request)
+        public async Task Update(Guid contractId, ContractRequest request)
         {
-            var contract = ContractMapper.ContractRequestToContract(request);
+            Contract contract = ContractMapper.ContractRequestToUpdateContract(contractId, request);
             await _contractRepo.Update(contract);
         }
 

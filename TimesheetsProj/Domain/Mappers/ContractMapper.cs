@@ -18,5 +18,18 @@ namespace TimesheetsProj.Domain.Mapper
                 Sheets = new List<Sheet>()
             };
         }
+
+        public static Contract ContractRequestToUpdateContract(Guid contractId, ContractRequest request)
+        {
+            return new Contract
+            {
+                Id = contractId,
+                Title = request.Title,
+                Description = request.Description,
+                DateStart = request.DateStart,
+                DateEnd = request.DateEnd,
+                IsDeleted = false,
+            };
+        }
     }
 }

@@ -88,7 +88,7 @@ namespace TimesheetsProj.Controllers
                 return BadRequest($"Contract {contractId} is not active or not found.");
             }
 
-            await _contractManager.Update(request);
+            await _contractManager.Update(contractId, request);
 
             return Ok();
         }

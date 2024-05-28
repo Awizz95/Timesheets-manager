@@ -4,11 +4,11 @@ namespace TimesheetsProj.Data.Interfaces
 {
     public interface IInvoiceRepo
     {
-        Task<Invoice> Get(Guid id);
-        Task<IEnumerable<Invoice>> GetAll();
-        Task Create(Invoice item);
-        Task Update(Invoice item);
-        public Task<Contract> GetContract(Guid id);
-        public Task<IEnumerable<Sheet>> GetSheets(Guid id);
+        Task<Invoice?> Get(Guid invoiceId);
+        Task<IEnumerable<Invoice>?> GetAll();
+        Task Create(Invoice invoice);
+        Task Update(Invoice invoice);
+        Task<Contract?> GetContract(Guid invoiceId);
+        Task<IEnumerable<Sheet>> GetSheets(Guid invoiceId);
     }
 }

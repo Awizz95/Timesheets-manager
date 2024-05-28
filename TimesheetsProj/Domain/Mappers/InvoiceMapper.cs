@@ -11,7 +11,17 @@ namespace TimesheetsProj.Domain.Mapper
             {
                 Id = Guid.NewGuid(),
                 ContractId = request.ContractId,
-                Contract = default,
+                DateStart = request.DateStart,
+                DateEnd = request.DateEnd
+            };
+        }
+
+        public static Invoice InvoiceRequestToUpdateInvoice(Guid invoiceId, InvoiceRequest request)
+        {
+            return new Invoice
+            {
+                Id = invoiceId,
+                ContractId = request.ContractId,
                 DateStart = request.DateStart,
                 DateEnd = request.DateEnd
             };

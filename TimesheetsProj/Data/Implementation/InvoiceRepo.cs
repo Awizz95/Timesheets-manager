@@ -14,43 +14,58 @@ namespace TimesheetsProj.Data.Implementation
             _dbContext = context;
         }
 
-        public async Task<Invoice> Get(Guid id)
+        public async Task<Invoice?> Get(Guid invoiceId)
         {
-            var result = await _dbContext.Invoices.FindAsync(id);
+            Invoice? result = await _dbContext.Invoices.FindAsync(invoiceId);
 
             return result;
         }
 
-        public async Task<IEnumerable<Invoice>> GetAll()
+        public async Task<IEnumerable<Invoice>?> GetAll()
         {
-            var result = await _dbContext.Invoices.ToListAsync();
+            List<Invoice> result = await _dbContext.Invoices.ToListAsync();
 
             return result;
         }
 
-        public async Task Create(Invoice item)
+        public async Task Create(Invoice invoice)
         {
-            await _dbContext.Invoices.AddAsync(item);
+            await _dbContext.Invoices.AddAsync(invoice);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Update(Invoice item)
+        public async Task Update(Invoice invoice)
         {
-            _dbContext.Invoices.Update(item);
+            await _dbContext.Invoices.Where(x => x.Id == invoice.Id).ExecuteUpdateAsync(x => x
+               .SetProperty(x => x.ContractId, invoice.ContractId)
+               .SetProperty(x => x.DateStart, invoice.DateStart)
+               .SetProperty(x => x.DateEnd, invoice.DateEnd)
+               .SetProperty(x => x.Sum, invoice.Sum)
+               .SetProperty(x => x.Contract, invoice.Contract)
+               .SetProperty(x => x.Sheets, invoice.Sheets));
+
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Contract> GetContract(Guid id)
+        public async Task<Contract?> GetContract(Guid invoiceId)
         {
-            var service = await _dbContext.Invoices.FindAsync(id);
-            var contract = service.Contract;
+            Invoice? invoice = await Get(invoiceId);
+
+            if (invoice is null) throw new InvalidOperationException($"Счета с id: {invoiceId} не существует");
+                
+            Contract? contract = invoice.Contract;
+
             return contract;
         }
 
-        public async Task<IEnumerable<Sheet>> GetSheets(Guid id)
+        public async Task<IEnumerable<Sheet>> GetSheets(Guid invoiceId)
         {
-            var service = await _dbContext.Invoices.FindAsync(id);
-            var sheets = service.Sheets;
+            Invoice? invoice = await Get(invoiceId);
+
+            if (invoice is null) throw new InvalidOperationException($"Счета с id: {invoiceId} не существует");
+
+            List<Sheet> sheets = invoice.Sheets;
+
             return sheets;
         }
     }
