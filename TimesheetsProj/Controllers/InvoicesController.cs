@@ -21,6 +21,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Create([FromBody] InvoiceRequest invoiceRequest)
         {
             bool isAllowedToCreate = await _contractManager.CheckContractIsActive(invoiceRequest.ContractId);
@@ -73,6 +74,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPut("{invoiceId}")]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Update([FromRoute] Guid invoiceId, [FromBody] InvoiceRequest request)
         {
             bool isAllowedToUpdate;

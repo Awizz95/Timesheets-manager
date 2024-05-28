@@ -11,10 +11,12 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     public class SheetManager : ISheetManager
     {
         private readonly ISheetRepo _sheetRepo;
+        private readonly IServiceRepo _serviceRepo;
 
-        public SheetManager(ISheetRepo sheetRepo)
+        public SheetManager(ISheetRepo sheetRepo, IServiceRepo serviceRepo)
         {
             _sheetRepo = sheetRepo;
+            _serviceRepo = serviceRepo;
         }
 
         public async Task<Sheet> Get(Guid sheetId)
@@ -53,6 +55,15 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             sheet.IsApproved = true;
             sheet.ApprovedDate = approvedDate;
             await _sheetRepo.Update(sheet);
+        }
+
+        public async Task<decimal> CalculateSum(Sheet sheet)
+        {
+            Guid serviceId = sheet.ServiceId;
+            Service service = await _serviceRepo.Get(serviceId);
+            decimal cost = service.Cost;
+            decimal sum = sheet.Amount * cost;
+            return sum;
         }
     }
 }

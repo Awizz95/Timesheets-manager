@@ -25,6 +25,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Service>>> GetAll()
         {
             IEnumerable<Service> result = await _serviceRepo.GetAll();
@@ -50,6 +51,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(Service service)
         {
             await _serviceRepo.Update(service);
@@ -58,12 +60,14 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Service>> Create([FromBody] string name)
+        [Authorize(Roles = "Admin, Client")]
+        public async Task<ActionResult<Service>> Create([FromBody] string name, decimal cost)
         {
             Service service = new Service
             {
                 Id = Guid.NewGuid(),
-                Name = name
+                Name = name,
+                Cost = cost
             };
 
             await _serviceRepo.Create(service);

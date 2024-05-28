@@ -2,6 +2,7 @@
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mapper;
+using TimesheetsProj.Domain.ValueObjects;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -10,10 +11,12 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     public class InvoiceManager : IInvoiceManager
     {
         private readonly IInvoiceRepo _invoiceRepo;
+        private readonly ISheetManager _sheetManager;
 
-        public InvoiceManager(IInvoiceRepo invoiceRepo, ISheetRepo sheetRepo)
+        public InvoiceManager(IInvoiceRepo invoiceRepo, ISheetManager sheetManager)
         {
             _invoiceRepo = invoiceRepo;
+            _sheetManager = sheetManager;
         }
 
         public async Task<Guid> Create(InvoiceRequest request)
@@ -48,5 +51,37 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
             await _invoiceRepo.Update(invoice);
         }
+
+        public async Task IncludeSheet(Guid invoiceId, Guid sheetId)
+        {
+            Invoice invoice = await Get(invoiceId);
+            Sheet sheet = await _sheetManager.Get(sheetId);
+
+            invoice.Sheets.Add(sheet);
+        }
+
+        public async Task<Money> GetTotalSum(Invoice invoice)
+        {
+            decimal amount = 0;
+
+            foreach(Sheet sheet in invoice.Sheets)
+            {
+                amount += await _sheetManager.CalculateSum(sheet);
+            }
+
+            Money sum = Money.FromDecimal(amount);
+            invoice.Sum = sum;
+
+            return sum;
+        }
+
+        public Money CheckSum(Invoice invoice)
+        {
+            if (invoice.Sum is null) return Money.FromDecimal(0);
+
+            return invoice.Sum;
+        }
+
+
     }
 }

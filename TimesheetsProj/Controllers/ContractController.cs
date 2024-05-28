@@ -71,6 +71,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPut("{contractId}")]
+        [Authorize(Roles = "Admin, Client")]
         public async Task<IActionResult> Update([FromRoute] Guid contractId, [FromBody] ContractRequest request)
         {
             bool isAllowedToUpdate;

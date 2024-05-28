@@ -60,6 +60,7 @@ namespace TimesheetsProj.Infrastructure.Extensions
             services.AddScoped<IInvoiceRepo, InvoiceRepo>();
             services.AddScoped<IClientRepo, ClientRepo>();
             services.AddScoped<IEmployeeRepo, EmployeeRepo>();
+            services.AddScoped<IServiceRepo, ServiceRepo>();
         }
 
         public static void ConfigureBackendSwagger(this IServiceCollection services)

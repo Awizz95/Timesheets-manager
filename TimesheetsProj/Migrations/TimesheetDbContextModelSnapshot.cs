@@ -24,7 +24,7 @@ namespace TimesheetsProj.Migrations
 
             modelBuilder.Entity("TimesheetsProj.Domain.ValueObjects.Money", b =>
                 {
-                    b.ToTable("Money", (string)null);
+                    b.ToTable("Money");
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Client", b =>
@@ -122,6 +122,9 @@ namespace TimesheetsProj.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -209,7 +212,7 @@ namespace TimesheetsProj.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRoles", (string)null);
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Contract", b =>

@@ -12,7 +12,7 @@ using TimesheetsProj.Data.Ef;
 namespace TimesheetsProj.Migrations
 {
     [DbContext(typeof(TimesheetDbContext))]
-    [Migration("20240523143000_migr-3")]
+    [Migration("20240528203847_migr3")]
     partial class migr3
     {
         /// <inheritdoc />
@@ -124,6 +124,9 @@ namespace TimesheetsProj.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()

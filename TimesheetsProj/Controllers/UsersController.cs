@@ -23,6 +23,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get([FromQuery] Guid userId)
         {
             User? user;
@@ -61,6 +62,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromQuery] Guid userId, [FromBody] UpdateUserRequest request)
         {
             request.EnsureNotNull(nameof(request));

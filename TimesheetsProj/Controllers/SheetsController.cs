@@ -57,6 +57,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Create([FromBody] SheetRequest sheet)
         {
             bool isAllowedToCreate = await _contractManager.CheckContractIsActive(sheet.ContractId);
@@ -72,6 +73,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Update([FromRoute] Guid sheetId, [FromBody] SheetRequest request)
         {
             bool isAllowedToCreate = await _contractManager.CheckContractIsActive(request.ContractId);

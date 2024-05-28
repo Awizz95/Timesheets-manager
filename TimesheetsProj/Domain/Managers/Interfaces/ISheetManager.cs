@@ -10,5 +10,6 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
         Task<Guid> Create(SheetRequest sheet);
         Task Update(Guid sheetId, SheetRequest sheetRequest);
         Task Approve(Sheet sheet, DateTime approvedDate);
+        Task<decimal> CalculateSum(Sheet sheet);
     }
 }

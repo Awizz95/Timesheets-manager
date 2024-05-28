@@ -5,6 +5,7 @@
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = null!;
-        public ICollection<Sheet> Sheets { get; set; }
+        public decimal Cost { get; set; } 
+        public ICollection<Sheet>? Sheets { get; set; }
     }
 }
