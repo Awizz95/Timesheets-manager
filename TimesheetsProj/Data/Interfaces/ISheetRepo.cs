@@ -8,6 +8,6 @@ namespace TimesheetsProj.Data.Interfaces
         Task<IEnumerable<Sheet>?> GetAll();
         Task Create(Sheet item);
         Task Update(Sheet item);
-        Task<IEnumerable<Sheet>> GetItemsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd);
+        Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd);
     }
 }

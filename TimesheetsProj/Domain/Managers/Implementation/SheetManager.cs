@@ -17,17 +17,17 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             _sheetRepo = sheetRepo;
         }
 
-        public async Task<Sheet?> Get(Guid sheetId)
+        public async Task<Sheet> Get(Guid sheetId)
         {
-            var sheet = await _sheetRepo.Get(sheetId);
+            Sheet? sheet = await _sheetRepo.Get(sheetId);
             if (sheet is not null) return sheet;
 
             throw new InvalidOperationException($"Табель с id: {sheetId} не найден!");
         }
 
-        public async Task<IEnumerable<Sheet>?> GetAll()
+        public async Task<IEnumerable<Sheet>> GetAll()
         {
-            var sheets = await _sheetRepo.GetAll();
+            IEnumerable<Sheet>? sheets = await _sheetRepo.GetAll();
 
             if (!sheets.Any()) throw new InvalidOperationException("Список табелей пустой!");
 
@@ -36,15 +36,15 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<Guid> Create(SheetRequest request)
         {
-            var sheet = SheetMapper.SheetRequestToSheet(request);
+            Sheet sheet = SheetMapper.SheetRequestToSheet(request);
             await _sheetRepo.Create(sheet);
 
             return sheet.Id;
         }
 
-        public async Task Update(SheetRequest request)
+        public async Task Update(Guid sheetId, SheetRequest request)
         {
-            var sheet = SheetMapper.SheetRequestToSheet(request);
+            Sheet sheet = SheetMapper.SheetRequestToUpdateSheet(sheetId, request);
             await _sheetRepo.Update(sheet);
         }
 

@@ -5,10 +5,10 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
 {
     public interface ISheetManager
     {
-        Task<Sheet?> Get(Guid id);
-        Task<IEnumerable<Sheet>?> GetAll();
+        Task<Sheet> Get(Guid id);
+        Task<IEnumerable<Sheet>> GetAll();
         Task<Guid> Create(SheetRequest sheet);
-        Task Update(SheetRequest sheetRequest);
+        Task Update(Guid sheetId, SheetRequest sheetRequest);
         Task Approve(Sheet sheet, DateTime approvedDate);
     }
 }

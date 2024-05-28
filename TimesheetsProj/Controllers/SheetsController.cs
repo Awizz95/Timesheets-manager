@@ -56,13 +56,12 @@ namespace TimesheetsProj.Controllers
             return Ok(result);
         }
 
-        /// <summary> Возвращает запись табеля </summary>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] SheetRequest sheet)
         {
             bool isAllowedToCreate = await _contractManager.CheckContractIsActive(sheet.ContractId);
 
-            if (!(bool)isAllowedToCreate)
+            if (!isAllowedToCreate)
             {
                 return BadRequest($"Contract {sheet.ContractId} is not active or not found.");
             }
@@ -72,18 +71,17 @@ namespace TimesheetsProj.Controllers
             return Ok(id);
         }
 
-        /// <summary> Обновляет запись табеля </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] SheetRequest sheet)
+        public async Task<IActionResult> Update([FromRoute] Guid sheetId, [FromBody] SheetRequest request)
         {
-            bool isAllowedToCreate = await _contractManager.CheckContractIsActive(sheet.ContractId);
+            bool isAllowedToCreate = await _contractManager.CheckContractIsActive(request.ContractId);
 
-            if (!(bool)isAllowedToCreate)
+            if (!isAllowedToCreate)
             {
-                return BadRequest($"Contract {sheet.ContractId} is not active or not found.");
+                return BadRequest($"Contract {request.ContractId} is not active or not found.");
             }
 
-            await _sheetManager.Update(sheet);
+            await _sheetManager.Update(sheetId, request);
 
             return Ok();
         }

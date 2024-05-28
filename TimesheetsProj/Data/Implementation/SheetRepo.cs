@@ -17,7 +17,7 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<Sheet?> Get(Guid id)
         {
-            var result = await _dbContext.Sheets.FindAsync(id);
+            Sheet? result = await _dbContext.Sheets.FindAsync(id);
 
             return result;
         }
@@ -50,9 +50,9 @@ namespace TimesheetsProj.Data.Implementation
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Sheet>> GetItemsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd)
+        public async Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd)
         {
-            var sheets = await _dbContext.Sheets
+            List<Sheet> sheets = await _dbContext.Sheets
                 .Where(x => x.ContractId == contractId)
                 .Where(x => x.Date >= dateStart && x.Date <= dateEnd)
                 .ToListAsync();

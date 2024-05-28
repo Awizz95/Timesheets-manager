@@ -18,5 +18,19 @@ namespace TimesheetsProj.Domain.Mapper
                 Amount = request.Amount
             };
         }
+
+        public static Sheet SheetRequestToUpdateSheet(Guid sheetId, SheetRequest request)
+        {
+            return new Sheet
+            {
+                Id = sheetId,
+                Date = request.Date,
+                EmployeeId = request.EmployeeId,
+                ContractId = request.ContractId,
+                ServiceId = request.ServiceId,
+                IsApproved = false,
+                Amount = request.Amount
+            };
+        }
     }
 }
