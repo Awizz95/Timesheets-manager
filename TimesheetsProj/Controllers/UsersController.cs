@@ -13,17 +13,11 @@ namespace TimesheetsProj.Controllers
     [ApiController]
     [Authorize(Roles = "Admin")]
     [Route("[controller]/[Action]")]
-    public class UsersController : ControllerBase
+    public class UsersController(IUserManager userManager) : ControllerBase
     {
-        private readonly IUserManager _userManager;
-
-        public UsersController(IUserManager userManager)
-        {
-            _userManager = userManager;
-        }
+        private readonly IUserManager _userManager = userManager;
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Get([FromQuery] Guid userId)
         {
             User? user;
@@ -37,7 +31,26 @@ namespace TimesheetsProj.Controllers
                 return NotFound(e.Message);
             }
 
-            var json = JsonSerializer.Serialize(user);
+            string json = JsonSerializer.Serialize(user);
+
+            return Ok(json);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            IEnumerable<User> users;
+
+            try
+            {
+                users = await _userManager.GetAll();
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
+
+            string json = JsonSerializer.Serialize(users);
 
             return Ok(json);
         }
@@ -46,11 +59,11 @@ namespace TimesheetsProj.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
-            request.EnsureNotNull(nameof(request));
             Guid response;
 
             try
             {
+                request.EnsureNotNull(nameof(request));
                 response = await _userManager.CreateUser(request);
             }
             catch (InvalidOperationException e)
@@ -62,13 +75,11 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update([FromQuery] Guid userId, [FromBody] UpdateUserRequest request)
         {
-            request.EnsureNotNull(nameof(request));
-
             try
             {
+                request.EnsureNotNull(nameof(request));
                 await _userManager.Update(userId, request);
             }
             catch (InvalidOperationException e)

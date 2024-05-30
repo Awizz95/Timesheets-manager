@@ -22,6 +22,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         public async Task<Sheet> Get(Guid sheetId)
         {
             Sheet? sheet = await _sheetRepo.Get(sheetId);
+
             if (sheet is not null) return sheet;
 
             throw new InvalidOperationException($"Табель с id: {sheetId} не найден!");
@@ -29,7 +30,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<IEnumerable<Sheet>> GetAll()
         {
-            IEnumerable<Sheet>? sheets = await _sheetRepo.GetAll();
+            IEnumerable<Sheet> sheets = await _sheetRepo.GetAll();
 
             if (!sheets.Any()) throw new InvalidOperationException("Список табелей пустой!");
 
@@ -60,10 +61,33 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         public async Task<decimal> CalculateSum(Sheet sheet)
         {
             Guid serviceId = sheet.ServiceId;
-            Service service = await _serviceRepo.Get(serviceId);
+            Service service;
+
+            try
+            {
+                service = await _serviceRepo.Get(serviceId);
+            }
+            catch
+            {
+                throw;
+            }
+
             decimal cost = service.Cost;
             decimal sum = sheet.Amount * cost;
+
             return sum;
+        }
+
+        public async Task IncludeInvoice(Guid sheetId, Guid invoiceId)
+        {
+            await _sheetRepo.IncludeInvoice(sheetId, invoiceId);
+        }
+
+        public async Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid invoiceId)
+        {
+            IEnumerable<Sheet> result = await _sheetRepo.GetSheetsForInvoice(invoiceId);
+
+            return result;
         }
     }
 }

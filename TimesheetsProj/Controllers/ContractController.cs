@@ -64,17 +64,26 @@ namespace TimesheetsProj.Controllers
         [Authorize(Roles = "Admin, Client")]
         public async Task<IActionResult> Create([FromBody] ContractRequest request)
         {
-            request.EnsureNotNull(nameof(request));
-            Guid id = await _contractManager.Create(request);
-
+            Guid id;
+            try
+            {
+                request.EnsureNotNull(nameof(request));
+                id = await _contractManager.Create(request);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+                
             return Ok(id);
         }
 
-        [HttpPut("{contractId}")]
+        [HttpPut]
         [Authorize(Roles = "Admin, Client")]
-        public async Task<IActionResult> Update([FromRoute] Guid contractId, [FromBody] ContractRequest request)
+        public async Task<IActionResult> Update([FromQuery] Guid contractId, [FromBody] ContractRequest request)
         {
             bool isAllowedToUpdate;
+
             try
             {
                 isAllowedToUpdate = await _contractManager.CheckContractIsActive(contractId);
@@ -84,9 +93,9 @@ namespace TimesheetsProj.Controllers
                 return BadRequest(e.Message);
             }
 
-            if (!(bool)isAllowedToUpdate)
+            if (!isAllowedToUpdate)
             {
-                return BadRequest($"Contract {contractId} is not active or not found.");
+                return BadRequest($"Контракт: {contractId} не доступен.");
             }
 
             await _contractManager.Update(contractId, request);

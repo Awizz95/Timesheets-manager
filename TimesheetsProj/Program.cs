@@ -1,5 +1,4 @@
 using FluentValidation.AspNetCore;
-using Microsoft.Extensions.Configuration;
 using TimesheetsProj.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

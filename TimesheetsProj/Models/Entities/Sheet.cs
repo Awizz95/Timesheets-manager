@@ -13,9 +13,9 @@
         public bool IsApproved { get; set; }
         public DateTime ApprovedDate { get; set; }
 
-        public Employee Employee { get; set; }
-        public Contract Contract { get; set; }
-        public Service Service { get; set; }
-        public Invoice Invoice { get; set; }
+        public Employee Employee { get; set; } = null!;
+        public Contract Contract { get; set; } = null!;
+        public Service Service { get; set; } = null!;
+        public Invoice? Invoice { get; set; }
     }
 }

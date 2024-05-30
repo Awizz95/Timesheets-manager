@@ -22,7 +22,7 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task<IEnumerable<Sheet>?> GetAll()
+        public async Task<IEnumerable<Sheet>> GetAll()
         {
             List<Sheet> result = await _dbContext.Sheets.ToListAsync();
 
@@ -50,14 +50,21 @@ namespace TimesheetsProj.Data.Implementation
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid contractId, DateTime dateStart, DateTime dateEnd)
+        public async Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid invoiceId)
         {
-            List<Sheet> sheets = await _dbContext.Sheets
-                .Where(x => x.ContractId == contractId)
-                .Where(x => x.Date >= dateStart && x.Date <= dateEnd)
+            IEnumerable<Sheet> sheets = await _dbContext.Sheets
+                .Where(x => x.InvoiceId == invoiceId)
                 .ToListAsync();
 
             return sheets;
+        }
+
+        public async Task IncludeInvoice(Guid sheetId, Guid invoiceId)
+        {
+            await _dbContext.Sheets.Where(x => x.Id == sheetId).ExecuteUpdateAsync(x => x
+            .SetProperty(x => x.InvoiceId, invoiceId));
+
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

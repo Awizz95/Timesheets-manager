@@ -12,7 +12,8 @@ namespace TimesheetsProj.Domain.Mapper
                 Id = Guid.NewGuid(),
                 ContractId = request.ContractId,
                 DateStart = request.DateStart,
-                DateEnd = request.DateEnd
+                DateEnd = request.DateEnd,
+                Sheets = new List<Sheet>()
             };
         }
 

@@ -35,7 +35,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<IEnumerable<Contract>> GetAll()
         {
-            IEnumerable<Contract>? contracts = await _contractRepo.GetAll();
+            IEnumerable<Contract> contracts = await _contractRepo.GetAll();
 
             if (!contracts.Any()) throw new InvalidOperationException("Список контрактов пустой!");
 

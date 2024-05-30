@@ -11,5 +11,8 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
         Task Update(Guid sheetId, SheetRequest sheetRequest);
         Task Approve(Sheet sheet, DateTime approvedDate);
         Task<decimal> CalculateSum(Sheet sheet);
+        Task IncludeInvoice(Guid sheetId, Guid invoiceId);
+        Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid invoiceId);
+
     }
 }

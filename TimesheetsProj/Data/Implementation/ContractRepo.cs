@@ -21,7 +21,7 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
-        public async Task<IEnumerable<Contract>?> GetAll()
+        public async Task<IEnumerable<Contract>> GetAll()
         {
             List<Contract> result = await _dbContext.Contracts.ToListAsync();
 

@@ -9,6 +9,6 @@ namespace TimesheetsProj.Data.Interfaces
         Task Create(Service service);
         Task Update(Service service);
         Task<IEnumerable<Sheet>> GetSheets(Guid id);
-        Task<bool> ServiceExists(Guid id);
+        Task<bool> ServiceExists(string name);
     }
 }

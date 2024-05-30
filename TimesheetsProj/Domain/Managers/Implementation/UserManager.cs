@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using TimesheetsProj.Data.Implementation;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mappers;
@@ -22,7 +23,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             _employeeRepo = employeeRepo;
         }
 
-        public async Task<User?> GetUserByRequest(LoginRequest request)
+        public async Task<User> GetUserByRequest(LoginRequest request)
         {
             byte[] passwordHash = GetPasswordHash(request.Password);
             User? user = await _userRepo.GetByLoginAndPasswordHash(request.Login, passwordHash);
@@ -38,7 +39,16 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
             if (user is not null) return user;
 
-            throw new InvalidOperationException("Ошибка при получении пользователя!");
+            throw new InvalidOperationException($"Пользователь с id {userId} не найден!");
+        }
+
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            IEnumerable<User> users = await _userRepo.GetAll();
+
+            if (!users.Any()) throw new InvalidOperationException("Список пользователей пустой!");
+
+            return users;
         }
 
         public async Task<Guid> CreateUser(CreateUserRequest request)
@@ -62,7 +72,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
                     await _employeeRepo.Create(user);
                     break;
                 default:
-                    throw new InvalidOperationException("Выбранная роль недоступна либо не существует!");
+                    throw new InvalidOperationException("Ошибка сопоставления роли пользователя!");
             }; 
          
             return user.Id;

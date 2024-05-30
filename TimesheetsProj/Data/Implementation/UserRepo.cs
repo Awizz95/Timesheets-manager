@@ -30,6 +30,13 @@ namespace TimesheetsProj.Data.Implementation
                     .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<User>> GetAll() 
+        {
+            List<User> result = await _dbContext.Users.ToListAsync();
+
+            return result;
+        }
+
         public async Task Create(User user)
         {
             await _dbContext.Users.AddAsync(user);

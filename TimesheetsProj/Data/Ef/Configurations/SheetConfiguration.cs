@@ -22,17 +22,20 @@ namespace TimesheetsProj.Data.Ef.Configurations
             builder
                 .HasOne(sheet => sheet.Contract)
                 .WithMany(contract => contract.Sheets)
-                .HasForeignKey("ContractId");
+                .HasForeignKey("ContractId")
+                .IsRequired();
 
             builder
                 .HasOne(sheet => sheet.Service)
                 .WithMany(service => service.Sheets)
-                .HasForeignKey("ServiceId");
+                .HasForeignKey("ServiceId")
+                .IsRequired();
 
             builder
                 .HasOne(sheet => sheet.Employee)
                 .WithMany(employee => employee.Sheets)
-                .HasForeignKey("EmployeeId");
+                .HasForeignKey("EmployeeId")
+                .IsRequired();
         }
     }
 }

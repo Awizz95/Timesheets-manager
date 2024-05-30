@@ -5,7 +5,8 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
 {
     public interface IUserManager
     {
-        Task<User?> GetUserByRequest(LoginRequest request);
+        Task<User> GetUserByRequest(LoginRequest request);
+        Task<IEnumerable<User>> GetAll();
         Task<Guid> CreateUser(CreateUserRequest request);
         Task Update(Guid userId, UpdateUserRequest request);
         Task<User?> GetUserById(Guid userId);

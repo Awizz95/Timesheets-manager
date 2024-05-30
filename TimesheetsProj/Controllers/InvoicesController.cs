@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using TimesheetsProj.Domain.Managers.Interfaces;
+using TimesheetsProj.Domain.ValueObjects;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
+    //[Authorize]
     [Route("[controller]/[Action]")]
     public class InvoicesController : TimesheetBaseController
     {
@@ -24,11 +26,20 @@ namespace TimesheetsProj.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Create([FromBody] InvoiceRequest invoiceRequest)
         {
-            bool isAllowedToCreate = await _contractManager.CheckContractIsActive(invoiceRequest.ContractId);
+            bool isAllowedToCreate;
+
+            try
+            {
+                isAllowedToCreate = await _contractManager.CheckContractIsActive(invoiceRequest.ContractId);
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (!isAllowedToCreate)
             {
-                return BadRequest($"Contract {invoiceRequest.ContractId} is not active or not found.");
+                return BadRequest($"Контракт {invoiceRequest.ContractId} не доступен.");
             }
 
             Guid id = await _invoiceManager.Create(invoiceRequest);
@@ -78,6 +89,7 @@ namespace TimesheetsProj.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid invoiceId, [FromBody] InvoiceRequest request)
         {
             bool isAllowedToUpdate;
+
             try
             {
                 isAllowedToUpdate = await _contractManager.CheckContractIsActive(request.ContractId);
@@ -89,12 +101,57 @@ namespace TimesheetsProj.Controllers
 
             if (!isAllowedToUpdate)
             {
-                return BadRequest($"Contract {invoiceId} is not active or not found.");
+                return BadRequest($"Контракт {invoiceId} не доступен.");
             }
 
             await _invoiceManager.Update(invoiceId, request);
 
             return Ok();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTotalSum([FromQuery] Guid invoiceId)
+        {
+            Invoice invoice;
+            Money money;
+
+            try
+            {
+                invoice = await _invoiceManager.Get(invoiceId);
+                money = await _invoiceManager.GetTotalSum(invoice);
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            decimal sum = money.Amount;
+
+            return Ok(sum);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckSum([FromQuery] Guid invoiceId)
+        {
+            Invoice invoice;
+
+            try
+            {
+                invoice = await _invoiceManager.Get(invoiceId);
+            }
+            catch(InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            Money money = _invoiceManager.CheckSum(invoice);
+            decimal sum = money.Amount;
+
+            return Ok(sum);
+        }
+
+
+
+
     }
 }

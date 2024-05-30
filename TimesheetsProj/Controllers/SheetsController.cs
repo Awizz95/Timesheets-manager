@@ -20,35 +20,35 @@ namespace TimesheetsProj.Controllers
             _contractManager = contractManager;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get([FromQuery] Guid id)
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] Guid sheetId)
         {
-            Sheet? result;
+            Sheet result;
 
             try
             {
-                result = await _sheetManager.Get(id);
+                result = await _sheetManager.Get(sheetId);
             }
-            catch(InvalidOperationException e)
+            catch (InvalidOperationException e)
             {
                 return BadRequest(e.Message);
             }
 
             return Ok(result);
-            
+
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            IEnumerable<Sheet>? result;
+            IEnumerable<Sheet> result;
 
             try
             {
                 result = await _sheetManager.GetAll();
             }
-            catch(InvalidOperationException e)
+            catch (InvalidOperationException e)
             {
                 return BadRequest(e.Message);
             }
@@ -60,11 +60,20 @@ namespace TimesheetsProj.Controllers
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> Create([FromBody] SheetRequest sheet)
         {
-            bool isAllowedToCreate = await _contractManager.CheckContractIsActive(sheet.ContractId);
+            bool isAllowedToCreate;
+
+            try
+            {
+                isAllowedToCreate = await _contractManager.CheckContractIsActive(sheet.ContractId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (!isAllowedToCreate)
             {
-                return BadRequest($"Contract {sheet.ContractId} is not active or not found.");
+                return BadRequest($"Контракт {sheet.ContractId} не доступен.");
             }
 
             Guid id = await _sheetManager.Create(sheet);
@@ -72,18 +81,62 @@ namespace TimesheetsProj.Controllers
             return Ok(id);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize(Roles = "Admin, Employee")]
-        public async Task<IActionResult> Update([FromRoute] Guid sheetId, [FromBody] SheetRequest request)
+        public async Task<IActionResult> Update([FromQuery] Guid sheetId, [FromBody] SheetRequest request)
         {
-            bool isAllowedToCreate = await _contractManager.CheckContractIsActive(request.ContractId);
+            bool isAllowedToCreate;
+
+            try
+            {
+                isAllowedToCreate = await _contractManager.CheckContractIsActive(request.ContractId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
 
             if (!isAllowedToCreate)
             {
-                return BadRequest($"Contract {request.ContractId} is not active or not found.");
+                return BadRequest($"Контракт {request.ContractId} не доступен.");
             }
 
             await _sheetManager.Update(sheetId, request);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin, Client")]
+        public async Task<IActionResult> Approve([FromQuery] Guid sheetId, [FromBody] DateTime approveDate)
+        {
+            Sheet sheet;
+
+            try
+            {
+                sheet = await _sheetManager.Get(sheetId);
+                bool isAllowedToCreate = await _contractManager.CheckContractIsActive(sheet.ContractId);
+
+                if (!isAllowedToCreate)
+                {
+                    return BadRequest($"Контракт {sheet.ContractId} не доступен.");
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            await _sheetManager.Approve(sheet, approveDate);
+
+            return Ok();
+        }
+
+        [HttpPut]
+        [Authorize(Roles = "Admin, Employee")]
+        public async Task<IActionResult> IncludeInvoice([FromQuery] Guid sheetId, Guid invoiceId)
+        {
+            await _sheetManager.IncludeInvoice(sheetId, invoiceId);
 
             return Ok();
         }

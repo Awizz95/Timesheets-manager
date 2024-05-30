@@ -5,7 +5,7 @@ namespace TimesheetsProj.Data.Interfaces
     public interface IInvoiceRepo
     {
         Task<Invoice?> Get(Guid invoiceId);
-        Task<IEnumerable<Invoice>?> GetAll();
+        Task<IEnumerable<Invoice>> GetAll();
         Task Create(Invoice invoice);
         Task Update(Invoice invoice);
         Task<Contract?> GetContract(Guid invoiceId);

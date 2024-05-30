@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
 using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Models.Entities;
@@ -19,7 +18,7 @@ namespace TimesheetsProj.Data.Implementation
         {
             Service? result = await _dbContext.Services.FindAsync(id);
 
-            if(result is not null) return result;
+            if (result is not null) return result;
 
             throw new InvalidOperationException("Данная услуга не найдена!");
         }
@@ -27,6 +26,8 @@ namespace TimesheetsProj.Data.Implementation
         public async Task<IEnumerable<Service>> GetAll()
         {
             List<Service> result = await _dbContext.Services.ToListAsync();
+
+            if (result.Count == 0) throw new InvalidOperationException("Список сервисов пуст!");
 
             return result;
         }
@@ -40,8 +41,8 @@ namespace TimesheetsProj.Data.Implementation
         public async Task Update(Service service)
         {
             await _dbContext.Services.Where(x => x.Id == service.Id).ExecuteUpdateAsync(x => x
-    .SetProperty(x => x.Name, service.Name)
-    .SetProperty(x => x.Sheets, service.Sheets));
+                        .SetProperty(x => x.Name, service.Name)
+                        .SetProperty(x => x.Sheets, service.Sheets));
 
             await _dbContext.SaveChangesAsync();
         }
@@ -53,9 +54,9 @@ namespace TimesheetsProj.Data.Implementation
             return sheets;
         }
 
-        public async Task<bool> ServiceExists(Guid id)
+        public async Task<bool> ServiceExists(string name) //проверить работу
         {
-            bool result = await _dbContext.Services.AnyAsync(e => e.Id == id);
+            bool result = await _dbContext.Services.AnyAsync(e => e.Name.Equals(name));
 
             return result;
         }

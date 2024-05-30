@@ -11,13 +11,13 @@ namespace TimesheetsProj.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var result = new ErrorModel { Errors = new Dictionary<string, string>() };
+                ErrorModel result = new ErrorModel { Errors = new Dictionary<string, string>() };
 
-                foreach (var value in context.ModelState.Values)
+                foreach (ModelStateEntry value in context.ModelState.Values)
                 {
                     if (value.ValidationState == ModelValidationState.Invalid)
                     {
-                        var propertyValue = value.GetType().GetProperties()
+                        string? propertyValue = value.GetType().GetProperties()
                             .FirstOrDefault(s => s.Name == "Key")?
                             .GetValue(value, null)?.ToString().ToLower();
 

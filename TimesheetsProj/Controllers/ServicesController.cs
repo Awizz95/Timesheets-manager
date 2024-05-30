@@ -28,15 +28,24 @@ namespace TimesheetsProj.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Service>>> GetAll()
         {
-            IEnumerable<Service> result = await _serviceRepo.GetAll();
+            IEnumerable<Service> result;
+
+            try
+            {
+                result = await _serviceRepo.GetAll();
+            }
+            catch(InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Service>> Get(Guid id)
+        [HttpGet]
+        public async Task<ActionResult<Service>> Get([FromQuery] Guid id)
         {
-            Service? service;
+            Service service;
 
             try
             {
@@ -47,12 +56,12 @@ namespace TimesheetsProj.Controllers
                 return NotFound(e.Message);
             }
 
-            return service;
+            return Ok(service);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(Service service)
+        public async Task<IActionResult> Update([FromBody] Service service)
         {
             await _serviceRepo.Update(service);
 
@@ -60,7 +69,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, Client")]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<ActionResult<Service>> Create([FromBody] string name, decimal cost)
         {
             Service service = new Service
@@ -75,9 +84,12 @@ namespace TimesheetsProj.Controllers
             return Ok(service);
         }
 
-        public async Task<bool> ServiceExists(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> ServiceExists([FromQuery] string name)
         {
-            return await _serviceRepo.ServiceExists(id);
+            bool result = await _serviceRepo.ServiceExists(name);
+
+            return Ok(result);
         }
     }
 }

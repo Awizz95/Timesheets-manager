@@ -38,7 +38,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<IEnumerable<Invoice>> GetAll()
         {
-            IEnumerable<Invoice>? invoices = await _invoiceRepo.GetAll();
+            IEnumerable<Invoice> invoices = await _invoiceRepo.GetAll();
 
             if (!invoices.Any()) throw new InvalidOperationException("Список счетов пустой!");
 
@@ -52,21 +52,24 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             await _invoiceRepo.Update(invoice);
         }
 
-        public async Task IncludeSheet(Guid invoiceId, Guid sheetId)
-        {
-            Invoice invoice = await Get(invoiceId);
-            Sheet sheet = await _sheetManager.Get(sheetId);
-
-            invoice.Sheets.Add(sheet);
-        }
-
         public async Task<Money> GetTotalSum(Invoice invoice)
         {
             decimal amount = 0;
 
-            foreach(Sheet sheet in invoice.Sheets)
+            List<Sheet> sheets = (List<Sheet>) await _sheetManager.GetSheetsForInvoice(invoice.Id);
+
+            if (sheets.Count == 0) return Money.FromDecimal(0);
+
+            try
             {
-                amount += await _sheetManager.CalculateSum(sheet);
+                foreach (Sheet sheet in sheets)
+                {
+                    amount += await _sheetManager.CalculateSum(sheet);
+                }
+            }
+            catch
+            {
+                throw;
             }
 
             Money sum = Money.FromDecimal(amount);

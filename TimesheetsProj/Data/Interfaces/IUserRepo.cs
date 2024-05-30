@@ -8,6 +8,7 @@ namespace TimesheetsProj.Data.Interfaces
         Task Create(User user);
         Task<string[]> GetUserRoleNamesAsync();
         Task<User?> GetByUserId(Guid userId);
+        Task<IEnumerable<User>> GetAll();
         Task Update(User user);
     }
 }
