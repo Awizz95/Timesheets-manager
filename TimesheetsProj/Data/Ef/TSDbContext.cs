@@ -18,6 +18,8 @@ namespace TimesheetsProj.Data.Ef
 
         public TimesheetDbContext(DbContextOptions<TimesheetDbContext> options) : base(options)
         {
+            //Database.EnsureDeleted();
+            //Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

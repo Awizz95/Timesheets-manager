@@ -18,7 +18,7 @@ namespace TimesheetsProj.Models.Entities
 
         [NotMapped] //доделать
         public Money Sum { get; set; }
-        public Contract? Contract { get; set; }
+        public Contract Contract { get; set; }
         public List<Sheet> Sheets { get; set; }
     }
 }

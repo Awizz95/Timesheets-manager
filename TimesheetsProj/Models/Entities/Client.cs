@@ -11,6 +11,6 @@
         public Guid Id { get; set; }
         public required Guid UserId { get; set; }
         public bool IsDeleted { get; set; }
-        public ICollection<Contract>? Contracts { get; set; }
+        public ICollection<Contract> Contracts { get; set; }
     }
 }

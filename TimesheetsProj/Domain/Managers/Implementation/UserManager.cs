@@ -71,6 +71,9 @@ namespace TimesheetsProj.Domain.Managers.Implementation
                     await _userRepo.Create(user);
                     await _employeeRepo.Create(user);
                     break;
+                case "Admin":
+                    await _userRepo.Create(user);
+                    break;
                 default:
                     throw new InvalidOperationException("Ошибка сопоставления роли пользователя!");
             }; 

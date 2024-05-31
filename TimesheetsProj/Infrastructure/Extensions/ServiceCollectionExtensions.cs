@@ -19,8 +19,7 @@ namespace TimesheetsProj.Infrastructure.Extensions
         {
             services.AddDbContext<TimesheetDbContext>(options =>
             {
-                options.UseNpgsql(
-                    configuration.GetConnectionString("Postgres"));
+                options.UseNpgsql(configuration.GetConnectionString("Postgres"));
             });
         }
 

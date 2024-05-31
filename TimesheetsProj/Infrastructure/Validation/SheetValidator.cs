@@ -8,8 +8,8 @@ namespace TimesheetsProj.Infrastructure.Validation
         public SheetRequestValidator()
         {
             RuleFor(x => x.Amount)
-                .InclusiveBetween(1, 8)
-                .WithMessage("Incorrect value");
+                .InclusiveBetween(0, 1_000_000)
+                .WithMessage("Значение должно быть между 0 и 1000000.");
         }
     }
 }
