@@ -31,6 +31,7 @@ namespace TimesheetsProj.Data.Ef
             modelBuilder.ApplyConfiguration(new ServiceConfiguration());
             modelBuilder.ApplyConfiguration(new SheetConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserRolesConfiguration());
             modelBuilder.Entity<Money>().HasNoKey();
         }
     }

@@ -12,13 +12,13 @@ namespace TimesheetsProj.Models.Entities
         }
 
         public Guid Id { get; set; }
-        public Guid ContractId { get; set; }
-        public DateTime DateStart { get; set; }
-        public DateTime DateEnd { get; set; }
+        public required Guid ContractId { get; set; }
+        public required DateTime DateStart { get; set; }
+        public required DateTime DateEnd { get; set; }
 
         [NotMapped] //доделать
         public Money Sum { get; set; }
-        public Contract Contract { get; set; }
+        public Contract Contract { get; set; } //когда он заполняется
         public List<Sheet> Sheets { get; set; }
     }
 }

@@ -62,7 +62,7 @@ namespace TimesheetsProj.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRoles",
+                name: "userroles",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -70,7 +70,7 @@ namespace TimesheetsProj.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => x.Id);
+                    table.PrimaryKey("PK_userroles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -203,6 +203,17 @@ namespace TimesheetsProj.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "userroles",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { new Guid("75016735-84f3-46f7-a2f2-fd55815f09d2"), "Client" },
+                    { new Guid("92287388-b5a8-48af-8497-a137dd47ac58"), "User" },
+                    { new Guid("c3382a38-019c-4a62-bfbd-cba4c6b8e229"), "Admin" },
+                    { new Guid("f9e490fc-c09e-459c-bae3-194d64df2015"), "Employee" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "users",
                 columns: new[] { "Id", "PasswordHash", "Role", "Username" },
                 values: new object[,]
@@ -273,7 +284,7 @@ namespace TimesheetsProj.Migrations
                 name: "sheets");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
+                name: "userroles");
 
             migrationBuilder.DropTable(
                 name: "users");

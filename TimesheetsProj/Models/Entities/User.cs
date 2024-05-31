@@ -4,8 +4,8 @@
     public class User : Entity
     {
         public Guid Id { get; set; }
-        public string Username { get; set; } = null!;
-        public byte[] PasswordHash { get; set; } = null!;
-        public string Role { get; set; } = null!;
+        public required string Username { get; set; }
+        public required byte[] PasswordHash { get; set; }
+        public required string Role { get; set; }
     }
 }

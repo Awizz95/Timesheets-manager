@@ -15,7 +15,7 @@ namespace TimesheetsProj.Models.Entities
         public required DateTime DateStart { get; set; }
         public required DateTime DateEnd { get; set; }
         public string? Description { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public ICollection<Sheet> Sheets { get; set; }
     }
 }

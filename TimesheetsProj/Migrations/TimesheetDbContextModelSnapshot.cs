@@ -362,7 +362,29 @@ namespace TimesheetsProj.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("userroles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c3382a38-019c-4a62-bfbd-cba4c6b8e229"),
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("92287388-b5a8-48af-8497-a137dd47ac58"),
+                            Name = "User"
+                        },
+                        new
+                        {
+                            Id = new Guid("75016735-84f3-46f7-a2f2-fd55815f09d2"),
+                            Name = "Client"
+                        },
+                        new
+                        {
+                            Id = new Guid("f9e490fc-c09e-459c-bae3-194d64df2015"),
+                            Name = "Employee"
+                        });
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Contract", b =>

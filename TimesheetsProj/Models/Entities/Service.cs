@@ -9,8 +9,8 @@
         }
 
         public Guid Id { get; set; }
-        public string Name { get; set; } = null!;
-        public decimal Cost { get; set; }
+        public required string Name { get; set; }
+        public required decimal Cost { get; set; }
         public ICollection<Sheet> Sheets { get; set; }
     }
 }

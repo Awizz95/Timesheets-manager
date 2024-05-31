@@ -10,7 +10,7 @@
 
         public Guid Id { get; set; }
         public required Guid UserId { get; set; }
-        public bool IsDeleted { get; set; }
+        public bool IsDeleted { get; set; } = false;
         public ICollection<Sheet> Sheets { get; set; }
     }
 }

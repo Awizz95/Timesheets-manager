@@ -4,18 +4,18 @@
     public class Sheet : Entity
     {
         public Guid Id { get; set; }
-        public DateTime Date { get; set; }
-        public Guid EmployeeId { get; set; }
-        public Guid ContractId { get; set; }
-        public Guid ServiceId { get; set; }
+        public required DateTime Date { get; set; }
+        public required Guid EmployeeId { get; set; }
+        public required Guid ContractId { get; set; }
+        public required Guid ServiceId { get; set; }
         public Guid? InvoiceId { get; set; }
-        public int Amount { get; set; }
-        public bool IsApproved { get; set; }
+        public required int Amount { get; set; }
+        public bool IsApproved { get; set; } = false;
         public DateTime ApprovedDate { get; set; }
 
-        public Employee Employee { get; set; } = null!;
-        public Contract Contract { get; set; } = null!;
-        public Service Service { get; set; } = null!;
+        public Employee Employee { get; set; } //когда он заполняется
+        public Contract Contract { get; set; }
+        public Service Service { get; set; }
         public Invoice? Invoice { get; set; }
     }
 }
