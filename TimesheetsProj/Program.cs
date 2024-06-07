@@ -1,10 +1,10 @@
 using FluentValidation.AspNetCore;
 using TimesheetsProj.Infrastructure.Extensions;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters(); //разобраться
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -15,7 +15,7 @@ builder.Services.ConfigureDomainManagers();
 builder.Services.ConfigureBackendSwagger();
 builder.Services.ConfigureValidation();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {

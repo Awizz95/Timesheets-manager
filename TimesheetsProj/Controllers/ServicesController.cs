@@ -43,7 +43,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Service>> Get([FromQuery] Guid id)
+        public async Task<ActionResult<Service>> GetById([FromQuery] Guid id)
         {
             Service service;
 

@@ -12,8 +12,6 @@
         public required int Amount { get; set; }
         public bool IsApproved { get; set; } = false;
         public DateTime ApprovedDate { get; set; }
-
-        public Employee Employee { get; set; } //когда он заполняется
         public Contract Contract { get; set; }
         public Service Service { get; set; }
         public Invoice? Invoice { get; set; }

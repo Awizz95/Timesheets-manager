@@ -3,6 +3,6 @@
     public class ErrorModel
     {
         public Dictionary<string, string> Errors { get; set; }
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

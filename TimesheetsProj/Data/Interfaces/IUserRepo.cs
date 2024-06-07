@@ -10,5 +10,7 @@ namespace TimesheetsProj.Data.Interfaces
         Task<User?> GetByUserId(Guid userId);
         Task<IEnumerable<User>> GetAll();
         Task Update(User user);
+        Task<IEnumerable<Contract>> GetAllContracts(Guid clientId);
+        Task<IEnumerable<Sheet>> GetAllSheets(Guid employeeId);
     }
 }

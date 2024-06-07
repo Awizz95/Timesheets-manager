@@ -66,5 +66,12 @@ namespace TimesheetsProj.Data.Implementation
 
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Sheet>> GetAllByEmployee(Guid employeeId)
+        {
+            List<Sheet> result = await _dbContext.Sheets.Where(x => x.EmployeeId == employeeId).ToListAsync();
+
+            return result;
+        }
     }
 }

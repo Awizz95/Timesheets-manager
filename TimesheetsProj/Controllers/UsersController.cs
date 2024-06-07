@@ -12,13 +12,13 @@ namespace TimesheetsProj.Controllers
 {
     [ApiController]
     [Authorize(Roles = "Admin")]
-    [Route("[controller]/[Action]")]
+    [Route("api/[controller]/[Action]")]
     public class UsersController(IUserManager userManager) : ControllerBase
     {
         private readonly IUserManager _userManager = userManager;
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Guid userId)
+        public async Task<IActionResult> GetById([FromQuery] Guid userId)
         {
             User? user;
 

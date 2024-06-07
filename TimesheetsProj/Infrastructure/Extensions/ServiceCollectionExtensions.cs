@@ -89,7 +89,7 @@ namespace TimesheetsProj.Infrastructure.Extensions
 
         public static void ConfigureValidation(this IServiceCollection services)
         {
-            services.AddTransient<IValidator<SheetRequest>, SheetRequestValidator>();
+            services.AddScoped<IValidator<SheetRequest>, SheetRequestValidator>();
         }
     }
 }

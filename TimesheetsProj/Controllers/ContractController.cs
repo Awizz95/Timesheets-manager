@@ -24,7 +24,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
             Contract result;
 
@@ -65,6 +65,7 @@ namespace TimesheetsProj.Controllers
         public async Task<IActionResult> Create([FromBody] ContractRequest request)
         {
             Guid id;
+
             try
             {
                 request.EnsureNotNull(nameof(request));

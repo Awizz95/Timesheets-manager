@@ -16,6 +16,7 @@ namespace TimesheetsProj.Models.Entities
         public required DateTime DateEnd { get; set; }
         public string? Description { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public required Guid ClientId { get; set; }
         public ICollection<Sheet> Sheets { get; set; }
     }
 }

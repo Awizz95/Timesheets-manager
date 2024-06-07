@@ -9,5 +9,6 @@ namespace TimesheetsProj.Data.Interfaces
         Task<IEnumerable<Contract>> GetAll();
         Task Update(Contract item);
         Task<bool> CheckContractIsActive(Guid id);
+        Task<IEnumerable<Contract>> GetAllByClient(Guid clientId);
     }
 }

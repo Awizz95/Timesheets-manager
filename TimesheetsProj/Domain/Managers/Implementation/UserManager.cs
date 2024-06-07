@@ -1,10 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using TimesheetsProj.Data.Implementation;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mappers;
-using TimesheetsProj.Infrastructure.Extensions;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -13,14 +11,10 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     public class UserManager : IUserManager
     {
         private readonly IUserRepo _userRepo;
-        private readonly IClientRepo _clientRepo;
-        private readonly IEmployeeRepo _employeeRepo;
 
-        public UserManager(IUserRepo userRepo, IClientRepo clientRepo, IEmployeeRepo employeeRepo)
+        public UserManager(IUserRepo userRepo)
         {
             _userRepo = userRepo;
-            _clientRepo = clientRepo;
-            _employeeRepo = employeeRepo;
         }
 
         public async Task<User> GetUserByRequest(LoginRequest request)
@@ -59,31 +53,14 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
             User user = UserMapper.CreateUserRequestToUser(request);
 
-            switch (user.Role)
-            {
-                case "User": await _userRepo.Create(user);
-                    break;
-                case "Client":
-                    await _userRepo.Create(user);
-                    await _clientRepo.Create(user);
-                    break;
-                case "Employee":
-                    await _userRepo.Create(user);
-                    await _employeeRepo.Create(user);
-                    break;
-                case "Admin":
-                    await _userRepo.Create(user);
-                    break;
-                default:
-                    throw new InvalidOperationException("Ошибка сопоставления роли пользователя!");
-            }; 
-         
+            await _userRepo.Create(user);
+
             return user.Id;
         }
 
         public static byte[] GetPasswordHash(string password)
         {
-            using (var sha1 = new SHA1CryptoServiceProvider())   // переделать
+            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())   
             {
                 return sha1.ComputeHash(Encoding.Unicode.GetBytes(password));
             }

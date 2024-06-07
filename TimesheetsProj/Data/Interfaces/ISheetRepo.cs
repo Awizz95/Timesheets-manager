@@ -10,5 +10,6 @@ namespace TimesheetsProj.Data.Interfaces
         Task Update(Sheet item);
         Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid invoiceId);
         Task IncludeInvoice(Guid sheetId, Guid invoiceId);
+        Task<IEnumerable<Sheet>> GetAllByEmployee(Guid employeeId);
     }
 }

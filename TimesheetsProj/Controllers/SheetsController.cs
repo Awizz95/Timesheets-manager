@@ -8,7 +8,7 @@ namespace TimesheetsProj.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("[controller]/[Action]")]
+    [Route("api/[controller]/[Action]")]
     public class SheetsController : TimesheetBaseController
     {
         private readonly ISheetManager _sheetManager;
@@ -21,7 +21,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Guid sheetId)
+        public async Task<IActionResult> GetById([FromQuery] Guid sheetId)
         {
             Sheet result;
 

@@ -2,18 +2,24 @@
 using System.Diagnostics.Contracts;
 using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
+using TimesheetsProj.Models;
 using TimesheetsProj.Models.Dto;
 using TimesheetsProj.Models.Entities;
+using Contract = TimesheetsProj.Models.Entities.Contract;
 
 namespace TimesheetsProj.Data.Implementation
 {
     public class UserRepo : IUserRepo
     {
         private readonly TimesheetDbContext _dbContext;
+        private readonly IContractRepo _contractRepo;
+        private readonly ISheetRepo _sheetRepo;
 
-        public UserRepo(TimesheetDbContext context)
+        public UserRepo(TimesheetDbContext dbContext, IContractRepo contractRepo, ISheetRepo sheetRepo)
         {
-            _dbContext = context;
+            _dbContext = dbContext;
+            _contractRepo = contractRepo;
+            _sheetRepo = sheetRepo;
         }
 
         public async Task<User?> GetByLoginAndPasswordHash(string login, byte[] passwordHash)
@@ -58,6 +64,38 @@ namespace TimesheetsProj.Data.Implementation
                 .SetProperty(x => x.Role, user.Role));
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> CheckUserIsDeleted(Guid id)
+        {
+            User user = await _dbContext.Users.Where(x => x.Id == id).SingleAsync();
+            bool status = user.IsDeleted;
+
+            return status;
+        }
+
+        public async Task<IEnumerable<Contract>> GetAllContracts(Guid clientId)
+        {
+            User? user = await GetByUserId(clientId);
+
+            if (user is null || user.Role != UserRoles.Client.ToString())
+                throw new InvalidOperationException($"Пользователя с id: {clientId} не существует или он является клиентом");
+
+            IEnumerable<Contract> contracts = await _contractRepo.GetAllByClient(clientId);
+
+            return contracts;
+        }
+
+        public async Task<IEnumerable<Sheet>> GetAllSheets(Guid employeeId)
+        {
+            User? user = await GetByUserId(employeeId);
+
+            if (user is null || user.Role != UserRoles.Employee.ToString())
+                throw new InvalidOperationException($"Пользователя с id: {employeeId} не существует или он является работником");
+
+            IEnumerable<Sheet> sheets = await _sheetRepo.GetAllByEmployee(employeeId);
+
+            return sheets;
         }
     }
 }

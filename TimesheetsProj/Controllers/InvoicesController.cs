@@ -9,8 +9,8 @@ using TimesheetsProj.Models.Entities;
 namespace TimesheetsProj.Controllers
 {
     [ApiController]
-    //[Authorize]
-    [Route("[controller]/[Action]")]
+    [Authorize]
+    [Route("api/[controller]/[Action]")]
     public class InvoicesController : TimesheetBaseController
     {
         private readonly IInvoiceManager _invoiceManager;
@@ -48,7 +48,7 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
             Invoice result;
 

@@ -49,6 +49,9 @@ namespace TimesheetsProj.Data.Ef.Configurations
         public void Configure(EntityTypeBuilder<Contract> builder)
         {
             builder.ToTable("contracts");
+            builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
+
             builder.HasData(GetInitialData());
         }
     }

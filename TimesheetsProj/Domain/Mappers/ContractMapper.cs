@@ -10,6 +10,7 @@ namespace TimesheetsProj.Domain.Mapper
             return new Contract
             {
                 Id = new Guid(),
+                ClientId = request.ClientId,
                 Title = request.Title,
                 Description = request.Description,
                 DateStart = request.DateStart,
@@ -24,6 +25,7 @@ namespace TimesheetsProj.Domain.Mapper
             return new Contract
             {
                 Id = contractId,
+                ClientId = request.ClientId,
                 Title = request.Title,
                 Description = request.Description,
                 DateStart = request.DateStart,

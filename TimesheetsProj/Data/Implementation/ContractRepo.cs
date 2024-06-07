@@ -28,6 +28,13 @@ namespace TimesheetsProj.Data.Implementation
             return result;
         }
 
+        public async Task<IEnumerable<Contract>> GetAllByClient(Guid clientId)
+        {
+            List<Contract> result = await _dbContext.Contracts.Where(x => x.ClientId == clientId).ToListAsync();
+
+            return result;
+        }
+
         public async Task Create(Contract item)
         {
             await _dbContext.Contracts.AddAsync(item);
