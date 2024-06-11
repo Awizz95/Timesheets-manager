@@ -140,5 +140,23 @@ namespace TimesheetsProj.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Employee")]
+        public async Task<IActionResult> GetAllSheetsByEmployee(Guid employeeId)
+        {
+            IEnumerable<Sheet> sheets;
+
+            try
+            {
+                sheets = await _sheetManager.GetAllByEmployee(employeeId);
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
+
+            return Ok(sheets);
+        }
     }
 }

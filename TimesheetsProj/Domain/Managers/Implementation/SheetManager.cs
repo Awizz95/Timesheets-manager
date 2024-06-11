@@ -3,6 +3,7 @@ using TimesheetsProj.Data.Implementation;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mapper;
+using TimesheetsProj.Models;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -12,11 +13,13 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     {
         private readonly ISheetRepo _sheetRepo;
         private readonly IServiceRepo _serviceRepo;
+        private readonly IUserRepo _userRepo;
 
-        public SheetManager(ISheetRepo sheetRepo, IServiceRepo serviceRepo)
+        public SheetManager(ISheetRepo sheetRepo, IServiceRepo serviceRepo, IUserRepo userRepo)
         {
             _sheetRepo = sheetRepo;
             _serviceRepo = serviceRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<Sheet> Get(Guid sheetId)
@@ -88,6 +91,27 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             IEnumerable<Sheet> result = await _sheetRepo.GetSheetsForInvoice(invoiceId);
 
             return result;
+        }
+
+        public async Task<IEnumerable<Sheet>> GetAllByEmployee(Guid employeeId)
+        {
+            IEnumerable<Sheet> sheets;
+
+            try
+            {
+                User? user = await _userRepo.GetByUserId(employeeId);
+
+                if (user is null || user.Role != UserRoles.Employee.ToString())
+                    throw new InvalidOperationException($"Пользователя с id: {employeeId} не существует или он является работником");
+
+                sheets = await _sheetRepo.GetAllByEmployee(employeeId);
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+
+            return sheets;
         }
     }
 }

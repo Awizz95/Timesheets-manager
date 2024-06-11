@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
+using TimesheetsProj.Models;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Data.Implementation
@@ -10,9 +11,9 @@ namespace TimesheetsProj.Data.Implementation
     {
         private readonly TimesheetDbContext _dbContext;
 
-        public SheetRepo(TimesheetDbContext context)
+        public SheetRepo(TimesheetDbContext dbContext)
         {
-            _dbContext = context;
+            _dbContext = dbContext;
         }
 
         public async Task<Sheet?> Get(Guid id)
@@ -45,7 +46,7 @@ namespace TimesheetsProj.Data.Implementation
                 .SetProperty(x => x.IsApproved, sheet.IsApproved)
                 .SetProperty(x => x.ApprovedDate, sheet.ApprovedDate)
                 .SetProperty(x => x.Date, sheet.Date)
-                .SetProperty(x => x.EmployeeId, sheet.EmployeeId));
+                .SetProperty(x => x.UserId, sheet.UserId));
 
             await _dbContext.SaveChangesAsync();
         }
@@ -69,9 +70,9 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<IEnumerable<Sheet>> GetAllByEmployee(Guid employeeId)
         {
-            List<Sheet> result = await _dbContext.Sheets.Where(x => x.EmployeeId == employeeId).ToListAsync();
+            List<Sheet> sheets = await _dbContext.Sheets.Where(x => x.UserId == employeeId).ToListAsync();
 
-            return result;
+            return sheets;
         }
     }
 }

@@ -12,7 +12,7 @@ using TimesheetsProj.Data.Ef;
 namespace TimesheetsProj.Migrations
 {
     [DbContext(typeof(TimesheetDbContext))]
-    [Migration("20240531142048_migr-1")]
+    [Migration("20240611152238_migr-1")]
     partial class migr1
     {
         /// <inheritdoc />
@@ -30,38 +30,12 @@ namespace TimesheetsProj.Migrations
                     b.ToTable("Money");
                 });
 
-            modelBuilder.Entity("TimesheetsProj.Models.Entities.Client", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("clients", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("3287389a-acf3-4d19-b7ee-b19a89396b23"),
-                            IsDeleted = false,
-                            UserId = new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5")
-                        });
-                });
-
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Contract", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ClientId")
+                    b.Property<Guid>("ClientId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("DateEnd")
@@ -80,9 +54,12 @@ namespace TimesheetsProj.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("contracts", (string)null);
 
@@ -90,6 +67,7 @@ namespace TimesheetsProj.Migrations
                         new
                         {
                             Id = new Guid("28c08503-c932-4160-aa41-a9cffa1fc630"),
+                            ClientId = new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"),
                             DateEnd = new DateTime(2024, 12, 31, 23, 59, 0, 0, DateTimeKind.Utc),
                             DateStart = new DateTime(2024, 5, 20, 12, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Описание контракта #1",
@@ -99,6 +77,7 @@ namespace TimesheetsProj.Migrations
                         new
                         {
                             Id = new Guid("d6050cad-666d-43c0-9443-4ae7e7fd6a51"),
+                            ClientId = new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"),
                             DateEnd = new DateTime(2025, 12, 31, 23, 59, 0, 0, DateTimeKind.Utc),
                             DateStart = new DateTime(2024, 3, 24, 23, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Описание контракта #2",
@@ -108,6 +87,7 @@ namespace TimesheetsProj.Migrations
                         new
                         {
                             Id = new Guid("b0c752f7-3a52-4f80-8b71-0b4eef05396b"),
+                            ClientId = new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"),
                             DateEnd = new DateTime(2026, 5, 31, 23, 0, 0, 0, DateTimeKind.Utc),
                             DateStart = new DateTime(2024, 1, 10, 11, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Описание контракта #3",
@@ -117,36 +97,12 @@ namespace TimesheetsProj.Migrations
                         new
                         {
                             Id = new Guid("8ed5761c-858e-4106-a689-168c4e59c5d4"),
+                            ClientId = new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"),
                             DateEnd = new DateTime(2024, 4, 5, 10, 0, 0, 0, DateTimeKind.Utc),
                             DateStart = new DateTime(2024, 2, 10, 11, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Описание контракта #4",
                             IsDeleted = false,
                             Title = "Тестовый истекший контракт #4"
-                        });
-                });
-
-            modelBuilder.Entity("TimesheetsProj.Models.Entities.Employee", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("employees", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("10e63f7e-0bb8-46f7-a27a-411d9140cafc"),
-                            IsDeleted = false,
-                            UserId = new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84")
                         });
                 });
 
@@ -251,9 +207,6 @@ namespace TimesheetsProj.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("EmployeeId")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid?>("InvoiceId")
                         .HasColumnType("uuid");
 
@@ -263,15 +216,18 @@ namespace TimesheetsProj.Migrations
                     b.Property<Guid>("ServiceId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContractId");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("InvoiceId");
 
                     b.HasIndex("ServiceId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("sheets", (string)null);
 
@@ -283,9 +239,9 @@ namespace TimesheetsProj.Migrations
                             ApprovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ContractId = new Guid("28c08503-c932-4160-aa41-a9cffa1fc630"),
                             Date = new DateTime(2024, 8, 13, 12, 0, 0, 0, DateTimeKind.Utc),
-                            EmployeeId = new Guid("10e63f7e-0bb8-46f7-a27a-411d9140cafc"),
                             IsApproved = false,
-                            ServiceId = new Guid("e0521823-8640-45d1-9de8-0f2e01102b83")
+                            ServiceId = new Guid("e0521823-8640-45d1-9de8-0f2e01102b83"),
+                            UserId = new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84")
                         },
                         new
                         {
@@ -294,9 +250,9 @@ namespace TimesheetsProj.Migrations
                             ApprovedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ContractId = new Guid("d6050cad-666d-43c0-9443-4ae7e7fd6a51"),
                             Date = new DateTime(2024, 11, 17, 12, 0, 0, 0, DateTimeKind.Utc),
-                            EmployeeId = new Guid("10e63f7e-0bb8-46f7-a27a-411d9140cafc"),
                             IsApproved = false,
-                            ServiceId = new Guid("764d9967-651d-4425-8237-8005b2f1ca32")
+                            ServiceId = new Guid("764d9967-651d-4425-8237-8005b2f1ca32"),
+                            UserId = new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84")
                         });
                 });
 
@@ -306,15 +262,18 @@ namespace TimesheetsProj.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("bytea");
 
                     b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -326,30 +285,34 @@ namespace TimesheetsProj.Migrations
                         new
                         {
                             Id = new Guid("109f4988-c1cb-4845-b6c5-5a824cbcd338"),
-                            PasswordHash = new byte[] { 94, 119, 237, 33, 80, 41, 39, 154, 45, 0, 255, 133, 53, 50, 146, 176, 48, 208, 107, 156 },
-                            Role = "User",
-                            Username = "Max"
+                            Email = "max@gmail.com",
+                            IsDeleted = false,
+                            PasswordHash = new byte[] { 197, 136, 170, 49, 232, 10, 104, 164, 82, 104, 225, 219, 230, 163, 168, 41, 139, 234, 216, 206 },
+                            Role = "User"
                         },
                         new
                         {
                             Id = new Guid("1744b83d-059e-4973-9c4f-0781c03f1079"),
-                            PasswordHash = new byte[] { 106, 110, 54, 11, 228, 45, 74, 106, 2, 195, 249, 195, 183, 129, 135, 24, 46, 159, 106, 145 },
-                            Role = "Admin",
-                            Username = "Andrey"
+                            Email = "andrey@gmail.com",
+                            IsDeleted = false,
+                            PasswordHash = new byte[] { 139, 45, 244, 222, 249, 92, 169, 8, 97, 182, 206, 249, 49, 72, 88, 212, 220, 168, 14, 205 },
+                            Role = "Admin"
                         },
                         new
                         {
                             Id = new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84"),
-                            PasswordHash = new byte[] { 103, 241, 94, 178, 185, 71, 163, 213, 221, 106, 1, 99, 200, 0, 142, 40, 143, 26, 239, 114 },
-                            Role = "Employee",
-                            Username = "Alex"
+                            Email = "alex@gmail.com",
+                            IsDeleted = false,
+                            PasswordHash = new byte[] { 46, 107, 131, 170, 249, 242, 215, 204, 255, 117, 47, 200, 34, 193, 4, 93, 158, 103, 104, 121 },
+                            Role = "Employee"
                         },
                         new
                         {
                             Id = new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"),
-                            PasswordHash = new byte[] { 172, 159, 122, 37, 13, 70, 11, 221, 231, 73, 199, 12, 190, 87, 38, 231, 139, 172, 169, 221 },
-                            Role = "Client",
-                            Username = "Mark"
+                            Email = "mark@gmail.com",
+                            IsDeleted = false,
+                            PasswordHash = new byte[] { 244, 243, 48, 111, 74, 177, 33, 29, 12, 98, 129, 216, 154, 10, 102, 112, 172, 146, 98, 47 },
+                            Role = "Client"
                         });
                 });
 
@@ -392,9 +355,9 @@ namespace TimesheetsProj.Migrations
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Contract", b =>
                 {
-                    b.HasOne("TimesheetsProj.Models.Entities.Client", null)
+                    b.HasOne("TimesheetsProj.Models.Entities.User", null)
                         .WithMany("Contracts")
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Invoice", b =>
@@ -416,12 +379,6 @@ namespace TimesheetsProj.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TimesheetsProj.Models.Entities.Employee", "Employee")
-                        .WithMany("Sheets")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TimesheetsProj.Models.Entities.Invoice", "Invoice")
                         .WithMany("Sheets")
                         .HasForeignKey("InvoiceId");
@@ -432,26 +389,22 @@ namespace TimesheetsProj.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Contract");
+                    b.HasOne("TimesheetsProj.Models.Entities.User", "User")
+                        .WithMany("Sheets")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Employee");
+                    b.Navigation("Contract");
 
                     b.Navigation("Invoice");
 
                     b.Navigation("Service");
-                });
 
-            modelBuilder.Entity("TimesheetsProj.Models.Entities.Client", b =>
-                {
-                    b.Navigation("Contracts");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Contract", b =>
-                {
-                    b.Navigation("Sheets");
-                });
-
-            modelBuilder.Entity("TimesheetsProj.Models.Entities.Employee", b =>
                 {
                     b.Navigation("Sheets");
                 });
@@ -463,6 +416,13 @@ namespace TimesheetsProj.Migrations
 
             modelBuilder.Entity("TimesheetsProj.Models.Entities.Service", b =>
                 {
+                    b.Navigation("Sheets");
+                });
+
+            modelBuilder.Entity("TimesheetsProj.Models.Entities.User", b =>
+                {
+                    b.Navigation("Contracts");
+
                     b.Navigation("Sheets");
                 });
 #pragma warning restore 612, 618

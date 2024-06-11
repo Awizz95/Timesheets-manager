@@ -14,32 +14,6 @@ namespace TimesheetsProj.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "clients",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_clients", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "employees",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_employees", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Money",
                 columns: table => new
                 {
@@ -78,9 +52,10 @@ namespace TimesheetsProj.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Username = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
-                    Role = table.Column<string>(type: "text", nullable: false)
+                    Role = table.Column<string>(type: "text", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -97,15 +72,16 @@ namespace TimesheetsProj.Migrations
                     DateEnd = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    ClientId = table.Column<Guid>(type: "uuid", nullable: true)
+                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_contracts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_contracts_clients_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "clients",
+                        name: "FK_contracts_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
                         principalColumn: "Id");
                 });
 
@@ -135,7 +111,7 @@ namespace TimesheetsProj.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EmployeeId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     ContractId = table.Column<Guid>(type: "uuid", nullable: false),
                     ServiceId = table.Column<Guid>(type: "uuid", nullable: false),
                     InvoiceId = table.Column<Guid>(type: "uuid", nullable: true),
@@ -153,12 +129,6 @@ namespace TimesheetsProj.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_sheets_employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "employees",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_sheets_invoices_InvoiceId",
                         column: x => x.InvoiceId,
                         principalTable: "invoices",
@@ -169,28 +139,24 @@ namespace TimesheetsProj.Migrations
                         principalTable: "services",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_sheets_users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                table: "clients",
-                columns: new[] { "Id", "IsDeleted", "UserId" },
-                values: new object[] { new Guid("3287389a-acf3-4d19-b7ee-b19a89396b23"), false, new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5") });
 
             migrationBuilder.InsertData(
                 table: "contracts",
-                columns: new[] { "Id", "ClientId", "DateEnd", "DateStart", "Description", "IsDeleted", "Title" },
+                columns: new[] { "Id", "ClientId", "DateEnd", "DateStart", "Description", "IsDeleted", "Title", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("28c08503-c932-4160-aa41-a9cffa1fc630"), null, new DateTime(2024, 12, 31, 23, 59, 0, 0, DateTimeKind.Utc), new DateTime(2024, 5, 20, 12, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #1", false, "Тестовый действующий контракт #1" },
-                    { new Guid("8ed5761c-858e-4106-a689-168c4e59c5d4"), null, new DateTime(2024, 4, 5, 10, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 2, 10, 11, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #4", false, "Тестовый истекший контракт #4" },
-                    { new Guid("b0c752f7-3a52-4f80-8b71-0b4eef05396b"), null, new DateTime(2026, 5, 31, 23, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 10, 11, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #3", false, "Тестовый действующий контракт #3" },
-                    { new Guid("d6050cad-666d-43c0-9443-4ae7e7fd6a51"), null, new DateTime(2025, 12, 31, 23, 59, 0, 0, DateTimeKind.Utc), new DateTime(2024, 3, 24, 23, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #2", false, "Тестовый действующий контракт #2" }
+                    { new Guid("28c08503-c932-4160-aa41-a9cffa1fc630"), new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"), new DateTime(2024, 12, 31, 23, 59, 0, 0, DateTimeKind.Utc), new DateTime(2024, 5, 20, 12, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #1", false, "Тестовый действующий контракт #1", null },
+                    { new Guid("8ed5761c-858e-4106-a689-168c4e59c5d4"), new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"), new DateTime(2024, 4, 5, 10, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 2, 10, 11, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #4", false, "Тестовый истекший контракт #4", null },
+                    { new Guid("b0c752f7-3a52-4f80-8b71-0b4eef05396b"), new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"), new DateTime(2026, 5, 31, 23, 0, 0, 0, DateTimeKind.Utc), new DateTime(2024, 1, 10, 11, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #3", false, "Тестовый действующий контракт #3", null },
+                    { new Guid("d6050cad-666d-43c0-9443-4ae7e7fd6a51"), new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"), new DateTime(2025, 12, 31, 23, 59, 0, 0, DateTimeKind.Utc), new DateTime(2024, 3, 24, 23, 0, 0, 0, DateTimeKind.Utc), "Описание контракта #2", false, "Тестовый действующий контракт #2", null }
                 });
-
-            migrationBuilder.InsertData(
-                table: "employees",
-                columns: new[] { "Id", "IsDeleted", "UserId" },
-                values: new object[] { new Guid("10e63f7e-0bb8-46f7-a27a-411d9140cafc"), false, new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84") });
 
             migrationBuilder.InsertData(
                 table: "services",
@@ -215,13 +181,13 @@ namespace TimesheetsProj.Migrations
 
             migrationBuilder.InsertData(
                 table: "users",
-                columns: new[] { "Id", "PasswordHash", "Role", "Username" },
+                columns: new[] { "Id", "Email", "IsDeleted", "PasswordHash", "Role" },
                 values: new object[,]
                 {
-                    { new Guid("109f4988-c1cb-4845-b6c5-5a824cbcd338"), new byte[] { 94, 119, 237, 33, 80, 41, 39, 154, 45, 0, 255, 133, 53, 50, 146, 176, 48, 208, 107, 156 }, "User", "Max" },
-                    { new Guid("1744b83d-059e-4973-9c4f-0781c03f1079"), new byte[] { 106, 110, 54, 11, 228, 45, 74, 106, 2, 195, 249, 195, 183, 129, 135, 24, 46, 159, 106, 145 }, "Admin", "Andrey" },
-                    { new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84"), new byte[] { 103, 241, 94, 178, 185, 71, 163, 213, 221, 106, 1, 99, 200, 0, 142, 40, 143, 26, 239, 114 }, "Employee", "Alex" },
-                    { new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"), new byte[] { 172, 159, 122, 37, 13, 70, 11, 221, 231, 73, 199, 12, 190, 87, 38, 231, 139, 172, 169, 221 }, "Client", "Mark" }
+                    { new Guid("109f4988-c1cb-4845-b6c5-5a824cbcd338"), "max@gmail.com", false, new byte[] { 197, 136, 170, 49, 232, 10, 104, 164, 82, 104, 225, 219, 230, 163, 168, 41, 139, 234, 216, 206 }, "User" },
+                    { new Guid("1744b83d-059e-4973-9c4f-0781c03f1079"), "andrey@gmail.com", false, new byte[] { 139, 45, 244, 222, 249, 92, 169, 8, 97, 182, 206, 249, 49, 72, 88, 212, 220, 168, 14, 205 }, "Admin" },
+                    { new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84"), "alex@gmail.com", false, new byte[] { 46, 107, 131, 170, 249, 242, 215, 204, 255, 117, 47, 200, 34, 193, 4, 93, 158, 103, 104, 121 }, "Employee" },
+                    { new Guid("d0d43c64-ae2b-4518-a41c-8d24031abcc5"), "mark@gmail.com", false, new byte[] { 244, 243, 48, 111, 74, 177, 33, 29, 12, 98, 129, 216, 154, 10, 102, 112, 172, 146, 98, 47 }, "Client" }
                 });
 
             migrationBuilder.InsertData(
@@ -236,17 +202,17 @@ namespace TimesheetsProj.Migrations
 
             migrationBuilder.InsertData(
                 table: "sheets",
-                columns: new[] { "Id", "Amount", "ApprovedDate", "ContractId", "Date", "EmployeeId", "InvoiceId", "IsApproved", "ServiceId" },
+                columns: new[] { "Id", "Amount", "ApprovedDate", "ContractId", "Date", "InvoiceId", "IsApproved", "ServiceId", "UserId" },
                 values: new object[,]
                 {
-                    { new Guid("35a58b18-844e-4081-a9c3-ab2683cbcbc4"), 15, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("d6050cad-666d-43c0-9443-4ae7e7fd6a51"), new DateTime(2024, 11, 17, 12, 0, 0, 0, DateTimeKind.Utc), new Guid("10e63f7e-0bb8-46f7-a27a-411d9140cafc"), null, false, new Guid("764d9967-651d-4425-8237-8005b2f1ca32") },
-                    { new Guid("baeb2b88-88cd-42fe-86d1-ed27435d9509"), 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("28c08503-c932-4160-aa41-a9cffa1fc630"), new DateTime(2024, 8, 13, 12, 0, 0, 0, DateTimeKind.Utc), new Guid("10e63f7e-0bb8-46f7-a27a-411d9140cafc"), null, false, new Guid("e0521823-8640-45d1-9de8-0f2e01102b83") }
+                    { new Guid("35a58b18-844e-4081-a9c3-ab2683cbcbc4"), 15, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("d6050cad-666d-43c0-9443-4ae7e7fd6a51"), new DateTime(2024, 11, 17, 12, 0, 0, 0, DateTimeKind.Utc), null, false, new Guid("764d9967-651d-4425-8237-8005b2f1ca32"), new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84") },
+                    { new Guid("baeb2b88-88cd-42fe-86d1-ed27435d9509"), 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("28c08503-c932-4160-aa41-a9cffa1fc630"), new DateTime(2024, 8, 13, 12, 0, 0, 0, DateTimeKind.Utc), null, false, new Guid("e0521823-8640-45d1-9de8-0f2e01102b83"), new Guid("769c84d7-01bd-4e4f-aeac-ef4963e9bd84") }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_contracts_ClientId",
+                name: "IX_contracts_UserId",
                 table: "contracts",
-                column: "ClientId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_invoices_ContractId",
@@ -259,11 +225,6 @@ namespace TimesheetsProj.Migrations
                 column: "ContractId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_sheets_EmployeeId",
-                table: "sheets",
-                column: "EmployeeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_sheets_InvoiceId",
                 table: "sheets",
                 column: "InvoiceId");
@@ -272,6 +233,11 @@ namespace TimesheetsProj.Migrations
                 name: "IX_sheets_ServiceId",
                 table: "sheets",
                 column: "ServiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_sheets_UserId",
+                table: "sheets",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -287,12 +253,6 @@ namespace TimesheetsProj.Migrations
                 name: "userroles");
 
             migrationBuilder.DropTable(
-                name: "users");
-
-            migrationBuilder.DropTable(
-                name: "employees");
-
-            migrationBuilder.DropTable(
                 name: "invoices");
 
             migrationBuilder.DropTable(
@@ -302,7 +262,7 @@ namespace TimesheetsProj.Migrations
                 name: "contracts");
 
             migrationBuilder.DropTable(
-                name: "clients");
+                name: "users");
         }
     }
 }

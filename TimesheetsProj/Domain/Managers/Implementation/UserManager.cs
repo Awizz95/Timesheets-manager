@@ -20,7 +20,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         public async Task<User> GetUserByRequest(LoginRequest request)
         {
             byte[] passwordHash = GetPasswordHash(request.Password);
-            User? user = await _userRepo.GetByLoginAndPasswordHash(request.Login, passwordHash);
+            User? user = await _userRepo.GetByEmailAndPasswordHash(request.Email, passwordHash);
 
             if (user is not null) return user;
 

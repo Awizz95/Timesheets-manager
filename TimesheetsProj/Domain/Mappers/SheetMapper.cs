@@ -11,7 +11,7 @@ namespace TimesheetsProj.Domain.Mapper
             {
                 Id = Guid.NewGuid(),
                 Date = request.Date,
-                EmployeeId = request.EmployeeId,
+                UserId = request.EmployeeId,
                 ContractId = request.ContractId,
                 ServiceId = request.ServiceId,
                 IsApproved = false,
@@ -25,7 +25,7 @@ namespace TimesheetsProj.Domain.Mapper
             {
                 Id = sheetId,
                 Date = request.Date,
-                EmployeeId = request.EmployeeId,
+                UserId = request.EmployeeId,
                 ContractId = request.ContractId,
                 ServiceId = request.ServiceId,
                 IsApproved = false,

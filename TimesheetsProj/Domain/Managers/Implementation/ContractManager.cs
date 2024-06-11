@@ -1,6 +1,7 @@
 ﻿using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Domain.Mapper;
+using TimesheetsProj.Models;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -9,10 +10,12 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     public class ContractManager : IContractManager
     {
         private readonly IContractRepo _contractRepo;
+        private readonly IUserRepo _userRepo;
 
-        public ContractManager(IContractRepo contractRepo)
+        public ContractManager(IContractRepo contractRepo, IUserRepo userRepo)
         {
             _contractRepo = contractRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<Guid> Create(ContractRequest request)
@@ -61,6 +64,27 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             }
 
             return result;
+        }
+
+        public async Task<IEnumerable<Contract>> GetAllByClient(Guid clientId)
+        {
+            IEnumerable<Contract> contracts;
+
+            try
+            {
+                User? user = await _userRepo.GetByUserId(clientId);
+
+                if (user is null || user.Role != UserRoles.Client.ToString())
+                    throw new InvalidOperationException($"Пользователя с id: {clientId} не существует или он является клиентом");
+
+                contracts = await _contractRepo.GetAllByClient(clientId);
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+
+            return contracts;
         }
     }
 }

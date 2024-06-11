@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Interfaces;
+using TimesheetsProj.Models;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Data.Implementation
@@ -30,9 +31,9 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<IEnumerable<Contract>> GetAllByClient(Guid clientId)
         {
-            List<Contract> result = await _dbContext.Contracts.Where(x => x.ClientId == clientId).ToListAsync();
+            List<Contract> contracts = await _dbContext.Contracts.Where(x => x.ClientId == clientId).ToListAsync();
 
-            return result;
+            return contracts;
         }
 
         public async Task Create(Contract item)

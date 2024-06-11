@@ -13,7 +13,7 @@ namespace TimesheetsProj.Domain.Mappers
             return new User
             {
                 Id = Guid.NewGuid(),
-                Username = request.Username,
+                Email = request.Email,
                 PasswordHash = UserManager.GetPasswordHash(request.Password),
                 Role = request.Role
             };
@@ -24,7 +24,7 @@ namespace TimesheetsProj.Domain.Mappers
             return new User
             {
                 Id = id,
-                Username = request.Username,
+                Email = request.Email,
                 PasswordHash = UserManager.GetPasswordHash(request.NewPassword),
                 Role = request.Role
             };

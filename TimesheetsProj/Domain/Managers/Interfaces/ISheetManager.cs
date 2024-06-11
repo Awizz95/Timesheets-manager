@@ -13,6 +13,7 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
         Task<decimal> CalculateSum(Sheet sheet);
         Task IncludeInvoice(Guid sheetId, Guid invoiceId);
         Task<IEnumerable<Sheet>> GetSheetsForInvoice(Guid invoiceId);
+        Task<IEnumerable<Sheet>> GetAllByEmployee(Guid employeeId);
 
     }
 }

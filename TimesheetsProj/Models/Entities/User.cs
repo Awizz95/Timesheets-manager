@@ -10,11 +10,10 @@
         }
 
         public Guid Id { get; set; }
-        public required string Username { get; set; }
+        public required string Email { get; set; }
         public required byte[] PasswordHash { get; set; }
         public required string Role { get; set; }
         public bool IsDeleted { get; set; } = false;
-
         public ICollection<Contract> Contracts { get; set; }
         public ICollection<Sheet> Sheets { get; set; }
     }

@@ -103,5 +103,23 @@ namespace TimesheetsProj.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin, Client")]
+        public async Task<IActionResult> GetAllContractsByClient(Guid clientId)
+        {
+            IEnumerable<Contract> contracts;
+
+            try
+            {
+                contracts = await _contractManager.GetAllByClient(clientId);
+            }
+            catch (InvalidOperationException e)
+            {
+                return NotFound(e.Message);
+            }
+
+            return Ok(contracts);
+        }
     }
 }

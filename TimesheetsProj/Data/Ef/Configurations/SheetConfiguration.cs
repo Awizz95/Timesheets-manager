@@ -12,7 +12,7 @@ namespace TimesheetsProj.Data.Ef.Configurations
                 new Sheet{
                     Id = Guid.Parse("baeb2b88-88cd-42fe-86d1-ed27435d9509"),
                     Date = new DateTime(2024,08,13,12,00,00,DateTimeKind.Utc),
-                    EmployeeId = Guid.Parse("10e63f7e-0bb8-46f7-a27a-411d9140cafc"),
+                    UserId = Guid.Parse("769c84d7-01bd-4e4f-aeac-ef4963e9bd84"),
                     ContractId = Guid.Parse("28c08503-c932-4160-aa41-a9cffa1fc630"),
                     ServiceId = Guid.Parse("e0521823-8640-45d1-9de8-0f2e01102b83"),
                     Amount = 5,
@@ -21,7 +21,7 @@ namespace TimesheetsProj.Data.Ef.Configurations
                 new Sheet{
                     Id = Guid.Parse("35a58b18-844e-4081-a9c3-ab2683cbcbc4"),
                     Date = new DateTime(2024,11,17,12,00,00,DateTimeKind.Utc),
-                    EmployeeId = Guid.Parse("10e63f7e-0bb8-46f7-a27a-411d9140cafc"),
+                    UserId = Guid.Parse("769c84d7-01bd-4e4f-aeac-ef4963e9bd84"),
                     ContractId = Guid.Parse("d6050cad-666d-43c0-9443-4ae7e7fd6a51"),
                     ServiceId = Guid.Parse("764d9967-651d-4425-8237-8005b2f1ca32"),
                     Amount = 15,
@@ -57,9 +57,9 @@ namespace TimesheetsProj.Data.Ef.Configurations
                 .IsRequired();
 
             builder
-                .HasOne(sheet => sheet.Employee)
+                .HasOne(sheet => sheet.User)
                 .WithMany(employee => employee.Sheets)
-                .HasForeignKey("EmployeeId")
+                .HasForeignKey("UserId")
                 .IsRequired();
 
             builder.HasData(GetInitialData());

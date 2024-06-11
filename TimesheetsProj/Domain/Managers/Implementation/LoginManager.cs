@@ -23,7 +23,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             List<Claim> claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
             };
 
@@ -33,7 +33,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
             LoginResponse loginResponse = new LoginResponse()
             {
-                username = user.Username,
+                Email = user.Email,
                 AccessToken = accessToken,
                 ExpiresIn = accessTokenRaw.ValidTo.ToEpochTime()
             };

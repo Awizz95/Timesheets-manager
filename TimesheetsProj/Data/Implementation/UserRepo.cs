@@ -22,10 +22,10 @@ namespace TimesheetsProj.Data.Implementation
             _sheetRepo = sheetRepo;
         }
 
-        public async Task<User?> GetByLoginAndPasswordHash(string login, byte[] passwordHash)
+        public async Task<User?> GetByEmailAndPasswordHash(string login, byte[] passwordHash)
         {
             return await _dbContext.Users
-                    .Where(x => x.Username == login && x.PasswordHash == passwordHash)
+                    .Where(x => x.Email == login && x.PasswordHash == passwordHash)
                     .FirstOrDefaultAsync();
         }
 
@@ -59,7 +59,7 @@ namespace TimesheetsProj.Data.Implementation
         public async Task Update(User user)
         {
             await _dbContext.Users.Where(x => x.Id == user.Id).ExecuteUpdateAsync(x => x
-                .SetProperty(x => x.Username, user.Username)
+                .SetProperty(x => x.Email, user.Email)
                 .SetProperty(x => x.PasswordHash, user.PasswordHash)
                 .SetProperty(x => x.Role, user.Role));
 
@@ -72,30 +72,6 @@ namespace TimesheetsProj.Data.Implementation
             bool status = user.IsDeleted;
 
             return status;
-        }
-
-        public async Task<IEnumerable<Contract>> GetAllContracts(Guid clientId)
-        {
-            User? user = await GetByUserId(clientId);
-
-            if (user is null || user.Role != UserRoles.Client.ToString())
-                throw new InvalidOperationException($"Пользователя с id: {clientId} не существует или он является клиентом");
-
-            IEnumerable<Contract> contracts = await _contractRepo.GetAllByClient(clientId);
-
-            return contracts;
-        }
-
-        public async Task<IEnumerable<Sheet>> GetAllSheets(Guid employeeId)
-        {
-            User? user = await GetByUserId(employeeId);
-
-            if (user is null || user.Role != UserRoles.Employee.ToString())
-                throw new InvalidOperationException($"Пользователя с id: {employeeId} не существует или он является работником");
-
-            IEnumerable<Sheet> sheets = await _sheetRepo.GetAllByEmployee(employeeId);
-
-            return sheets;
         }
     }
 }

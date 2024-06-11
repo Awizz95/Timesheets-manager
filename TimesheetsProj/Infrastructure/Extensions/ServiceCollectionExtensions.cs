@@ -57,8 +57,6 @@ namespace TimesheetsProj.Infrastructure.Extensions
             services.AddScoped<IContractRepo, ContractRepo>();
             services.AddScoped<IUserRepo, UserRepo>();
             services.AddScoped<IInvoiceRepo, InvoiceRepo>();
-            services.AddScoped<IClientRepo, ClientRepo>();
-            services.AddScoped<IEmployeeRepo, EmployeeRepo>();
             services.AddScoped<IServiceRepo, ServiceRepo>();
         }
 
@@ -90,6 +88,7 @@ namespace TimesheetsProj.Infrastructure.Extensions
         public static void ConfigureValidation(this IServiceCollection services)
         {
             services.AddScoped<IValidator<SheetRequest>, SheetRequestValidator>();
+            services.AddScoped<IValidator<CreateUserRequest>, CreateUserRequestValidator>();
         }
     }
 }

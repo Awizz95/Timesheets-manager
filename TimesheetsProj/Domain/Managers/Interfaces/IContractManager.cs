@@ -10,5 +10,6 @@ namespace TimesheetsProj.Domain.Managers.Interfaces
         Task<Guid> Create(ContractRequest request);
         Task Update(Guid contractId, ContractRequest request);
         Task<bool> CheckContractIsActive(Guid id);
+        Task<IEnumerable<Contract>> GetAllByClient(Guid clientId);
     }
 }
