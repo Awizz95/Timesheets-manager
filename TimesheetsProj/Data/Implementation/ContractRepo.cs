@@ -17,7 +17,9 @@ namespace TimesheetsProj.Data.Implementation
 
         public async Task<Contract?> Get(Guid id)
         {
-            Contract? result = await _dbContext.Contracts.FindAsync(id);
+            Contract? result = await _dbContext.Contracts
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(x => x.Id == id);
 
             return result;
         }

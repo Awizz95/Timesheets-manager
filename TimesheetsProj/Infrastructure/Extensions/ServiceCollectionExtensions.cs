@@ -1,14 +1,19 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using System.Text;
 using TimesheetsProj.Data.Ef;
 using TimesheetsProj.Data.Implementation;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Implementation;
 using TimesheetsProj.Domain.Managers.Interfaces;
+using TimesheetsProj.Infrastructure.Auth;
 using TimesheetsProj.Infrastructure.Validation;
-using TimesheetsProj.Models.Dto.Authentication;
 using TimesheetsProj.Models.Dto.Requests;
 
 namespace TimesheetsProj.Infrastructure.Extensions
@@ -25,21 +30,49 @@ namespace TimesheetsProj.Infrastructure.Extensions
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<JwtAccessOptions>(configuration.GetSection("Authentication:JwtAccessOptions"));
+            services.AddScoped<ILoginManager, LoginManager>();
+            services.AddScoped<IJwtProvider, JwtProvider>();
 
-            var jwtSettings = new JwtOptions();
-            configuration.Bind("Authentication:JwtAccessOptions", jwtSettings);
+            JwtProvider jwtProvider = new(configuration);
 
-            services.AddTransient<ILoginManager, LoginManager>();
-
-            services.AddAuthentication(x => {
-                        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;})
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
                     .AddJwtBearer(options =>
                     {
                         options.RequireHttpsMetadata = false;
-                        options.TokenValidationParameters = jwtSettings.GetTokenValidationParameters();
+                        options.SaveToken = true;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = configuration["Authentication:JwtOptions:Issuer"],
+                            ValidateAudience = true,
+                            ValidAudience = configuration["Authentication:JwtOptions:Audience"],
+                            ValidateLifetime = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:JwtOptions:SigningKey"]!)),
+                            ValidateIssuerSigningKey = true,
+                            ClockSkew = TimeSpan.Zero
+                        };
+                        options.IncludeErrorDetails = true;
+
+                        //чтобы токен записывался из куки
+                        options.Events = new JwtBearerEvents
+                        {
+                            OnMessageReceived = context =>
+                            {
+                                context.Token = context.Request.Cookies["Timesheets-access-token"];
+
+                                return Task.CompletedTask;
+                            }
+                        };
                     });
+
+            services.AddAuthorization(options => options.DefaultPolicy =
+                    new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+                    .RequireAuthenticatedUser()
+                    .Build());
         }
 
         public static void ConfigureDomainManagers(this IServiceCollection services)
@@ -65,11 +98,15 @@ namespace TimesheetsProj.Infrastructure.Extensions
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Timesheets", Version = "v1" });
+
+                //добавляет кнопку авторизовать
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
+                    Name = "Autorization",
+                    Description = "Please enter a valid token",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
+                    Scheme = "Bearer",
                     BearerFormat = "JWT"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
@@ -77,7 +114,9 @@ namespace TimesheetsProj.Infrastructure.Extensions
                     {
                         new OpenApiSecurityScheme()
                         {
-                            Reference = new OpenApiReference(){Type = ReferenceType.SecurityScheme, Id = "Bearer"}
+                            Reference = new OpenApiReference(){
+                                Type = ReferenceType.SecurityScheme, 
+                                Id = "Bearer"}
                         },
                         Array.Empty<string>()
                     }

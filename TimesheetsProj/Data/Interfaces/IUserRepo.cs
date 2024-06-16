@@ -5,6 +5,7 @@ namespace TimesheetsProj.Data.Interfaces
     public interface IUserRepo
     {
         Task<User?> GetByEmailAndPasswordHash(string login, byte[] passwordHash);
+        Task<User?> GetUserByEmail(string email);
         Task Create(User user);
         Task<string[]> GetUserRoleNamesAsync();
         Task<User?> GetByUserId(Guid userId);

@@ -1,8 +1,7 @@
-﻿using System.Security.Cryptography;
-using System.Text;
-using TimesheetsProj.Data.Interfaces;
+﻿using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
-using TimesheetsProj.Domain.Mappers;
+using TimesheetsProj.Infrastructure;
+using TimesheetsProj.Infrastructure.Mappers;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -17,9 +16,9 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             _userRepo = userRepo;
         }
 
-        public async Task<User> GetUserByRequest(LoginRequest request)
+        public async Task<User> GetUserByLoginRequest(LoginRequest request)
         {
-            byte[] passwordHash = GetPasswordHash(request.Password);
+            byte[] passwordHash = PasswordHasher.GetPasswordHash(request.Password);
             User? user = await _userRepo.GetByEmailAndPasswordHash(request.Email, passwordHash);
 
             if (user is not null) return user;
@@ -34,6 +33,15 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             if (user is not null) return user;
 
             throw new InvalidOperationException($"Пользователь с id {userId} не найден!");
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            User? user = await _userRepo.GetUserByEmail(email);
+
+            if (user is not null) return user;
+
+            throw new InvalidOperationException("Пользователя с таким email не существует!");
         }
 
         public async Task<IEnumerable<User>> GetAll()
@@ -58,40 +66,25 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             return user.Id;
         }
 
-        public static byte[] GetPasswordHash(string password)
-        {
-            using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())   
-            {
-                return sha1.ComputeHash(Encoding.Unicode.GetBytes(password));
-            }
-        }
-
-        private async Task<bool> IsPasswordCorrect(string password, Guid userId)
-        {
-
-            byte[] passwordHash = GetPasswordHash(password);
-            User? user = await _userRepo.GetByUserId(userId);
-
-            if (user is null) throw new InvalidOperationException($"Пользователь с id: {userId} не найден!");
-
-            bool result = user.PasswordHash.SequenceEqual(passwordHash);
-
-            return result;
-
-        }
-
         public async Task Update(Guid userId, UpdateUserRequest request)
         {
-            bool isOldPasswordCorrect = await IsPasswordCorrect(request.OldPassword, userId);
+            User? user = await GetUserById(userId) ?? throw new InvalidOperationException($"Пользователь с id: {userId} не найден!");
+
+            bool isOldPasswordCorrect = PasswordHasher.IsPasswordCorrect(request.OldPassword, user.PasswordHash);
 
             if (!isOldPasswordCorrect) throw new InvalidOperationException("Действующий пароль не совпадает!");
 
             string[] userRoleNames = await _userRepo.GetUserRoleNamesAsync();
 
-            if (!userRoleNames.Contains(request.Role)) throw new ApplicationException("Введеная роль не существует!");
+            if (!userRoleNames.Contains(request.Role)) throw new InvalidOperationException("Введеная роль не существует!");
 
-            User user = UserMapper.UpdateUserRequestToUser(userId,request);
+            user = UserMapper.UpdateUserRequestToUser(userId,request);
 
+            await _userRepo.Update(user);
+        }
+
+        public async Task Update(User user)
+        {
             await _userRepo.Update(user);
         }
     }

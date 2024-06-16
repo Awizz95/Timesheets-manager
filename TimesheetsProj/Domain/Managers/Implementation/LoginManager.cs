@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using TimesheetsProj.Domain.Managers.Interfaces;
+using TimesheetsProj.Infrastructure.Auth;
 using TimesheetsProj.Infrastructure.Extensions;
-using TimesheetsProj.Models.Dto.Authentication;
 using TimesheetsProj.Models.Dto.Responses;
 using TimesheetsProj.Models.Entities;
 
@@ -11,34 +13,44 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 {
     public class LoginManager : ILoginManager
     {
-        private readonly JwtAccessOptions _jwtAccessOptions;
+        private readonly IJwtProvider _jwtProvider;
+        private readonly IConfiguration _configuration;
 
-        public LoginManager(IOptions<JwtAccessOptions> jwtAccessOptions)
+        public LoginManager(IJwtProvider jwtProvider, IConfiguration configuration)
         {
-            _jwtAccessOptions = jwtAccessOptions.Value;
+            _jwtProvider = jwtProvider;
+            _configuration = configuration;
         }
 
-        public async Task<LoginResponse> Authenticate(User user)
+        public string GenerateAccessToken(User user)
         {
-            List<Claim> claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
-            };
+            string aToken = _jwtProvider.GenerateAccessToken(user);
 
-            JwtSecurityToken accessTokenRaw = _jwtAccessOptions.GenerateToken(claims);
-            JwtSecurityTokenHandler securityHandler = new JwtSecurityTokenHandler();
-            string accessToken = securityHandler.WriteToken(accessTokenRaw);
-
-            LoginResponse loginResponse = new LoginResponse()
-            {
-                Email = user.Email,
-                AccessToken = accessToken,
-                ExpiresIn = accessTokenRaw.ValidTo.ToEpochTime()
-            };
-
-            return loginResponse;
+            return aToken;
         }
+
+        public string GenerateRefreshToken()
+        {
+            string rToken = _jwtProvider.GenerateRefreshToken();
+
+            return rToken;
+        }
+
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            TokenValidationParameters tokenValidationParameters = _jwtProvider.GetTokenValidationParameters();
+            JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
+            ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken? securityToken);
+            JwtSecurityToken? jwtSecurityToken = securityToken as JwtSecurityToken;
+
+            //дополнительная проверка заголовка и алгоритма шифрования
+            if (jwtSecurityToken is null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Неверный токен!");
+
+            return principal;
+        }
+
+
+
     }
 }

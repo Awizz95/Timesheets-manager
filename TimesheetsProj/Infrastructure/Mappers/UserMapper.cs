@@ -4,7 +4,7 @@ using TimesheetsProj.Domain.Managers.Implementation;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
-namespace TimesheetsProj.Domain.Mappers
+namespace TimesheetsProj.Infrastructure.Mappers
 {
     public static class UserMapper
     {
@@ -14,10 +14,10 @@ namespace TimesheetsProj.Domain.Mappers
             {
                 Id = Guid.NewGuid(),
                 Email = request.Email,
-                PasswordHash = UserManager.GetPasswordHash(request.Password),
+                PasswordHash = PasswordHasher.GetPasswordHash(request.Password),
                 Role = request.Role
             };
-        } 
+        }
 
         public static User UpdateUserRequestToUser(Guid id, UpdateUserRequest request)
         {
@@ -25,7 +25,7 @@ namespace TimesheetsProj.Domain.Mappers
             {
                 Id = id,
                 Email = request.Email,
-                PasswordHash = UserManager.GetPasswordHash(request.NewPassword),
+                PasswordHash = PasswordHasher.GetPasswordHash(request.NewPassword),
                 Role = request.Role
             };
         }

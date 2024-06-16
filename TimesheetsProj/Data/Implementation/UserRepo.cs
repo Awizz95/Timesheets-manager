@@ -5,7 +5,6 @@ using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Models;
 using TimesheetsProj.Models.Dto;
 using TimesheetsProj.Models.Entities;
-using Contract = TimesheetsProj.Models.Entities.Contract;
 
 namespace TimesheetsProj.Data.Implementation
 {
@@ -22,11 +21,16 @@ namespace TimesheetsProj.Data.Implementation
             _sheetRepo = sheetRepo;
         }
 
-        public async Task<User?> GetByEmailAndPasswordHash(string login, byte[] passwordHash)
+        public async Task<User?> GetByEmailAndPasswordHash(string email, byte[] passwordHash)
         {
             return await _dbContext.Users
-                    .Where(x => x.Email == login && x.PasswordHash == passwordHash)
+                    .Where(x => x.Email == email && x.PasswordHash == passwordHash)
                     .FirstOrDefaultAsync();
+        }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            return await _dbContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
         }
 
         public async Task<User?> GetByUserId(Guid userId)
@@ -61,7 +65,9 @@ namespace TimesheetsProj.Data.Implementation
             await _dbContext.Users.Where(x => x.Id == user.Id).ExecuteUpdateAsync(x => x
                 .SetProperty(x => x.Email, user.Email)
                 .SetProperty(x => x.PasswordHash, user.PasswordHash)
-                .SetProperty(x => x.Role, user.Role));
+                .SetProperty(x => x.Role, user.Role)
+                .SetProperty(x => x.RefreshToken, user.RefreshToken)
+                .SetProperty(x => x.RefreshTokenExpireTime, user.RefreshTokenExpireTime));
 
             await _dbContext.SaveChangesAsync();
         }

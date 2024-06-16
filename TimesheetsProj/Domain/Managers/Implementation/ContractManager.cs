@@ -1,6 +1,6 @@
 ﻿using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
-using TimesheetsProj.Domain.Mapper;
+using TimesheetsProj.Infrastructure.Mappers;
 using TimesheetsProj.Models;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
@@ -28,11 +28,9 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public async Task<Contract> Get(Guid contractId)
         {
-            Contract? contract = await _contractRepo.Get(contractId);
+            Contract? contract = await _contractRepo.Get(contractId) ?? throw new InvalidOperationException($"Объект с id: {contractId} не найден");
 
-            if (contract is not null) return contract;
-
-            throw new InvalidOperationException($"Контракт с id: {contractId} не найден!");
+            return contract;
         }
 
         public async Task<IEnumerable<Contract>> GetAll()

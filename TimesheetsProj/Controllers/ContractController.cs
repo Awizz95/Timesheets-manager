@@ -39,7 +39,7 @@ namespace TimesheetsProj.Controllers
 
             string json = JsonSerializer.Serialize(result);
 
-            return Ok(json);
+            return Json(json);
         }
 
         [HttpGet]

@@ -1,7 +1,7 @@
 ﻿using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
-namespace TimesheetsProj.Domain.Mapper
+namespace TimesheetsProj.Infrastructure.Mappers
 {
     public static class SheetMapper
     {

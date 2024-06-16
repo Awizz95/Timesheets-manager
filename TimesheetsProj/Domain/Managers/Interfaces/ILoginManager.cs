@@ -1,10 +1,13 @@
-﻿using TimesheetsProj.Models.Dto.Responses;
+﻿using System.Security.Claims;
+using TimesheetsProj.Models.Dto.Responses;
 using TimesheetsProj.Models.Entities;
 
 namespace TimesheetsProj.Domain.Managers.Interfaces
 {
     public interface ILoginManager
     {
-        Task<LoginResponse> Authenticate(User user);
+        string GenerateAccessToken(User user);
+        string GenerateRefreshToken();
+        ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }

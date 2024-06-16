@@ -2,7 +2,7 @@
 using TimesheetsProj.Data.Implementation;
 using TimesheetsProj.Data.Interfaces;
 using TimesheetsProj.Domain.Managers.Interfaces;
-using TimesheetsProj.Domain.Mapper;
+using TimesheetsProj.Infrastructure.Mappers;
 using TimesheetsProj.Models;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;

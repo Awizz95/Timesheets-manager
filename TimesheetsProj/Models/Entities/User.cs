@@ -13,6 +13,8 @@
         public required string Email { get; set; }
         public required byte[] PasswordHash { get; set; }
         public required string Role { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime RefreshTokenExpireTime { get; set; }
         public bool IsDeleted { get; set; } = false;
         public ICollection<Contract> Contracts { get; set; }
         public ICollection<Sheet> Sheets { get; set; }
