@@ -16,14 +16,12 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             _userRepo = userRepo;
         }
 
-        public async Task<User> GetUserByLoginRequest(LoginRequest request)
+        public async Task<User?> GetUserByLoginRequest(LoginRequest request)
         {
             byte[] passwordHash = PasswordHasher.GetPasswordHash(request.Password);
             User? user = await _userRepo.GetByEmailAndPasswordHash(request.Email, passwordHash);
 
-            if (user is not null) return user;
-
-            throw new InvalidOperationException("Ошибка при получении пользователя!");
+            return user;
         }
 
         public async Task<User?> GetUserById(Guid userId)
@@ -35,13 +33,11 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             throw new InvalidOperationException($"Пользователь с id {userId} не найден!");
         }
 
-        public async Task<User> GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmail(string email)
         {
             User? user = await _userRepo.GetUserByEmail(email);
 
-            if (user is not null) return user;
-
-            throw new InvalidOperationException("Пользователя с таким email не существует!");
+            return user;
         }
 
         public async Task<IEnumerable<User>> GetAll()

@@ -38,7 +38,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            TokenValidationParameters tokenValidationParameters = _jwtProvider.GetTokenValidationParameters();
+            TokenValidationParameters tokenValidationParameters = _jwtProvider.GetTokenValidationParameters(false);
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken? securityToken);
             JwtSecurityToken? jwtSecurityToken = securityToken as JwtSecurityToken;

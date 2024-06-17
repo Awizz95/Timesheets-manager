@@ -8,7 +8,7 @@ namespace TimesheetsProj.Infrastructure.Auth
     {
         string GenerateAccessToken(User user);
         string GenerateRefreshToken();
-        TokenValidationParameters GetTokenValidationParameters();
+        TokenValidationParameters GetTokenValidationParameters(bool lifetimeCheck);
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
     }
 }

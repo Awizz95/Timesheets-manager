@@ -59,11 +59,11 @@ namespace TimesheetsProj.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
         {
-            Guid response;
+            if (request is null) return BadRequest("Пустой запрос");
 
+            Guid response;
             try
             {
-                request.EnsureNotNull(nameof(request));
                 response = await _userManager.CreateUser(request);
             }
             catch (InvalidOperationException e)
@@ -77,9 +77,10 @@ namespace TimesheetsProj.Controllers
         [HttpPut]
         public async Task<IActionResult> Update([FromQuery] Guid userId, [FromBody] UpdateUserRequest request)
         {
+            if (request is null) return BadRequest("Пустой запрос");
+
             try
             {
-                request.EnsureNotNull(nameof(request));
                 await _userManager.Update(userId, request);
             }
             catch (InvalidOperationException e)

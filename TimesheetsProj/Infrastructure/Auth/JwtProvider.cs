@@ -18,7 +18,7 @@ namespace TimesheetsProj.Infrastructure.Auth
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
-            TokenValidationParameters tokenValidationParameters = GetTokenValidationParameters();
+            TokenValidationParameters tokenValidationParameters = GetTokenValidationParameters(false);
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
             ClaimsPrincipal principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken? securityToken);
             JwtSecurityToken? jwtSecurityToken = securityToken as JwtSecurityToken;
@@ -63,10 +63,11 @@ namespace TimesheetsProj.Infrastructure.Auth
             byte[] arrayOfNumbers = new byte[64];
             using RandomNumberGenerator rng = RandomNumberGenerator.Create();
             rng.GetBytes(arrayOfNumbers);
+
             return Convert.ToBase64String(arrayOfNumbers);
         }
 
-        public TokenValidationParameters GetTokenValidationParameters()
+        public TokenValidationParameters GetTokenValidationParameters(bool lifetimeCheck)
         {
             return new TokenValidationParameters()
             {
@@ -74,10 +75,10 @@ namespace TimesheetsProj.Infrastructure.Auth
                 ValidIssuer = _configuration["Authentication:JwtOptions:Issuer"],
                 ValidateAudience = true,
                 ValidAudience = _configuration["Authentication:JwtOptions:Audience"],
-                ValidateLifetime = true,
+                ValidateLifetime = lifetimeCheck,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Authentication:JwtOptions:SigningKey"]!)),
                 ValidateIssuerSigningKey = true,
-                RoleClaimType = ClaimsIdentity.DefaultRoleClaimType,
+                RoleClaimType = ClaimsIdentity.DefaultRoleClaimType, //проверить
                 ClockSkew = TimeSpan.Zero
             };
         }

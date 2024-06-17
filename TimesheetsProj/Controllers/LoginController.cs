@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Security.Claims;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Infrastructure.Auth;
-using TimesheetsProj.Infrastructure.Extensions;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -27,27 +27,32 @@ namespace TimesheetsProj.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            if (request is null) return BadRequest("Пустой запрос");
+
+            User user;
             try
             {
-                request.EnsureNotNull(nameof(request));
-                User user = await _userManager.GetUserByLoginRequest(request);
-
-                string aToken = _jwtProvider.GenerateAccessToken(user);
-
-                user.RefreshToken = _jwtProvider.GenerateRefreshToken();
-                user.RefreshTokenExpireTime = DateTime.UtcNow.AddHours(_configuration.GetSection("Authentication:JwtOptions:RefreshTokenValidityInHours").Get<int>());
-
-                await _userManager.Update(user);
-
-                HttpContext.Response.Cookies.Append("Timesheets-access-token", aToken);
-                HttpContext.Response.Cookies.Append("Timesheets-refresh-token", user.RefreshToken);
+                user = await _userManager.GetUserByLoginRequest(request) ?? throw new NullReferenceException("Пользователь не найден");
             }
             catch (Exception e)
             {
                 return Unauthorized(e.Message);
             }
 
-            return Ok();
+            string aToken = _jwtProvider.GenerateAccessToken(user);
+            user.RefreshToken = _jwtProvider.GenerateRefreshToken();
+            user.RefreshTokenExpireTime = DateTime.UtcNow.AddHours(_configuration.GetSection("Authentication:JwtOptions:RefreshTokenValidityInHours").Get<int>());
+
+            await _userManager.Update(user);
+
+            HttpContext.Response.Cookies.Append("Timesheets-access-token", aToken);
+            HttpContext.Response.Cookies.Append("Timesheets-refresh-token", user.RefreshToken);
+
+            return Ok(new ObjectResult(new
+            {
+                aToken,
+                user.RefreshToken
+            }));
         }
 
         [HttpPost]
@@ -62,12 +67,11 @@ namespace TimesheetsProj.Controllers
             string userEmailAdress = claims.FindFirst(ClaimTypes.Email)!.Value;
 
             User user;
-
             try
             {
-                user = await _userManager.GetUserByEmail(userEmailAdress);
+                user = await _userManager.GetUserByEmail(userEmailAdress) ?? throw new NullReferenceException();
             }
-            catch(InvalidOperationException)
+            catch (NullReferenceException)
             {
                 return BadRequest("Неверный access или refresh токен");
             }
@@ -97,12 +101,11 @@ namespace TimesheetsProj.Controllers
         public async Task<IActionResult> RevokeRefreshToken(string email)
         {
             User user;
-
             try
             {
-                user = await _userManager.GetUserByEmail(email);
+                user = await _userManager.GetUserByEmail(email) ?? throw new NullReferenceException();
             }
-            catch (InvalidOperationException)
+            catch (NullReferenceException)
             {
                 return BadRequest("Пользователь с таким email не найден");
             }

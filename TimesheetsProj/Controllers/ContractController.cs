@@ -64,11 +64,11 @@ namespace TimesheetsProj.Controllers
         [Authorize(Roles = "Admin, Client")]
         public async Task<IActionResult> Create([FromBody] ContractRequest request)
         {
-            Guid id;
+            if (request is null) return BadRequest("Пустой запрос");
 
+            Guid id;
             try
             {
-                request.EnsureNotNull(nameof(request));
                 id = await _contractManager.Create(request);
             }
             catch (Exception e)

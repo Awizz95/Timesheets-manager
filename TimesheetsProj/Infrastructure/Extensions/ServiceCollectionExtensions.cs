@@ -44,17 +44,7 @@ namespace TimesheetsProj.Infrastructure.Extensions
                     {
                         options.RequireHttpsMetadata = false;
                         options.SaveToken = true;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidIssuer = configuration["Authentication:JwtOptions:Issuer"],
-                            ValidateAudience = true,
-                            ValidAudience = configuration["Authentication:JwtOptions:Audience"],
-                            ValidateLifetime = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:JwtOptions:SigningKey"]!)),
-                            ValidateIssuerSigningKey = true,
-                            ClockSkew = TimeSpan.Zero
-                        };
+                        options.TokenValidationParameters = jwtProvider.GetTokenValidationParameters(true);
                         options.IncludeErrorDetails = true;
 
                         //чтобы токен записывался из куки
