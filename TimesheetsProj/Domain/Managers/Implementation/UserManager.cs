@@ -10,10 +10,12 @@ namespace TimesheetsProj.Domain.Managers.Implementation
     public class UserManager : IUserManager
     {
         private readonly IUserRepo _userRepo;
+        private readonly ILogger _logger;
 
-        public UserManager(IUserRepo userRepo)
+        public UserManager(IUserRepo userRepo, ILogger logger)
         {
             _userRepo = userRepo;
+            _logger = logger;
         }
 
         public async Task<User?> GetUserByLoginRequest(LoginRequest request)
@@ -28,9 +30,7 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         {
             User? user = await _userRepo.GetByUserId(userId);
 
-            if (user is not null) return user;
-
-            throw new InvalidOperationException($"Пользователь с id {userId} не найден!");
+            return user;
         }
 
         public async Task<User?> GetUserByEmail(string email)
@@ -43,8 +43,6 @@ namespace TimesheetsProj.Domain.Managers.Implementation
         public async Task<IEnumerable<User>> GetAll()
         {
             IEnumerable<User> users = await _userRepo.GetAll();
-
-            if (!users.Any()) throw new InvalidOperationException("Список пользователей пустой!");
 
             return users;
         }
@@ -62,26 +60,44 @@ namespace TimesheetsProj.Domain.Managers.Implementation
             return user.Id;
         }
 
-        public async Task Update(Guid userId, UpdateUserRequest request)
-        {
-            User? user = await GetUserById(userId) ?? throw new InvalidOperationException($"Пользователь с id: {userId} не найден!");
-
-            bool isOldPasswordCorrect = PasswordHasher.IsPasswordCorrect(request.OldPassword, user.PasswordHash);
-
-            if (!isOldPasswordCorrect) throw new InvalidOperationException("Действующий пароль не совпадает!");
-
-            string[] userRoleNames = await _userRepo.GetUserRoleNamesAsync();
-
-            if (!userRoleNames.Contains(request.Role)) throw new InvalidOperationException("Введеная роль не существует!");
-
-            user = UserMapper.UpdateUserRequestToUser(userId,request);
-
-            await _userRepo.Update(user);
-        }
-
         public async Task Update(User user)
         {
             await _userRepo.Update(user);
+        }
+
+        public async Task<bool> CheckUserIsDeleted(string email)
+        {
+            User? user = await _userRepo.GetUserByEmail(email);
+
+            if (user is null) throw new InvalidOperationException("Пользователь не найден");
+
+            bool isDeleted = user.IsDeleted;
+
+            return isDeleted;
+        }
+
+        public async Task<bool> CheckUpdateUserRequest(UpdateUserRequest request)
+        {
+            try
+            {
+                User? user = await GetUserByEmail(request.Email) ?? throw new InvalidOperationException($"Пользователь не найден!");
+
+                bool isOldPasswordCorrect = PasswordHasher.IsPasswordCorrect(request.OldPassword, user.PasswordHash);
+
+                if (!isOldPasswordCorrect) throw new InvalidOperationException("Действующий пароль не совпадает!");
+
+                string[] userRoleNames = await _userRepo.GetUserRoleNamesAsync();
+
+                if (!userRoleNames.Contains(request.Role)) throw new InvalidOperationException("Введеная роль не существует!");
+
+                return true;
+            }
+            catch(InvalidOperationException e)
+            {
+                _logger.Log(LogLevel.Information, e.Message);
+
+                return false;
+            }
         }
     }
 }

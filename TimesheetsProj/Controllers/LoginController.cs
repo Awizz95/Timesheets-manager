@@ -25,19 +25,13 @@ namespace TimesheetsProj.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Authorize([FromBody] LoginRequest request)
         {
             if (request is null) return BadRequest("Пустой запрос");
 
-            User user;
-            try
-            {
-                user = await _userManager.GetUserByLoginRequest(request) ?? throw new NullReferenceException("Пользователь не найден");
-            }
-            catch (Exception e)
-            {
-                return Unauthorized(e.Message);
-            }
+            User? user = await _userManager.GetUserByLoginRequest(request);
+
+            if (user is null) return Unauthorized("Пользователь не найден");
 
             string aToken = _jwtProvider.GenerateAccessToken(user);
             user.RefreshToken = _jwtProvider.GenerateRefreshToken();

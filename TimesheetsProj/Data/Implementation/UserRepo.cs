@@ -72,12 +72,5 @@ namespace TimesheetsProj.Data.Implementation
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<bool> CheckUserIsDeleted(Guid id)
-        {
-            User user = await _dbContext.Users.Where(x => x.Id == id).SingleAsync();
-            bool status = user.IsDeleted;
-
-            return status;
-        }
     }
 }

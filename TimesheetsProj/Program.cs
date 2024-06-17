@@ -7,6 +7,7 @@ builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddLogging();
 
 builder.Services.ConfigureDbContext(builder.Configuration);
 builder.Services.ConfigureAuthentication(builder.Configuration);

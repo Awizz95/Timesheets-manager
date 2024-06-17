@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using TimesheetsProj.Domain.Managers.Implementation;
 using TimesheetsProj.Domain.Managers.Interfaces;
 using TimesheetsProj.Infrastructure.Extensions;
+using TimesheetsProj.Infrastructure.Mappers;
 using TimesheetsProj.Models.Dto.Requests;
 using TimesheetsProj.Models.Entities;
 
@@ -20,16 +21,9 @@ namespace TimesheetsProj.Controllers
         [HttpGet]
         public async Task<IActionResult> GetById([FromQuery] Guid userId)
         {
-            User? user;
+            User? user = await _userManager.GetUserById(userId);
 
-            try
-            {
-                user = await _userManager.GetUserById(userId);
-            }
-            catch (InvalidOperationException e)
-            {
-                return NotFound(e.Message);
-            }
+            if (user is null) return BadRequest("Пользователь с этим id не найден");
 
             string json = JsonSerializer.Serialize(user);
 
@@ -39,16 +33,9 @@ namespace TimesheetsProj.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            IEnumerable<User> users;
+            IEnumerable<User> users = await _userManager.GetAll();
 
-            try
-            {
-                users = await _userManager.GetAll();
-            }
-            catch (InvalidOperationException e)
-            {
-                return NotFound(e.Message);
-            }
+            if (!users.Any()) return Ok("Список пользователей пуст");
 
             string json = JsonSerializer.Serialize(users);
 
@@ -61,34 +48,43 @@ namespace TimesheetsProj.Controllers
         {
             if (request is null) return BadRequest("Пустой запрос");
 
-            Guid response;
+            Guid userId;
             try
             {
-                response = await _userManager.CreateUser(request);
+                userId = await _userManager.CreateUser(request);
             }
             catch (InvalidOperationException e)
             {
                 return BadRequest(e.Message);
             }
 
-            return Ok(response);
+            return Ok(userId);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] Guid userId, [FromBody] UpdateUserRequest request)
+        public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
         {
             if (request is null) return BadRequest("Пустой запрос");
 
-            try
-            {
-                await _userManager.Update(userId, request);
-            }
-            catch (InvalidOperationException e)
-            {
-                return BadRequest(e.Message);
-            }
+            bool isRequestCorrect = await _userManager.CheckUpdateUserRequest(request);
+
+            if (!isRequestCorrect) return BadRequest("Запрос некорректен");
+
+            User? userDB = await _userManager.GetUserByEmail(request.Email);
+            User user = UserMapper.UpdateUserRequestToUser(userDB.Id, request);
+
+            await _userManager.Update(user);
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CheckStatus(string userEmail)
+        {
+            bool isDeleted = await _userManager.CheckUserIsDeleted(userEmail);
+
+            if (isDeleted) return Ok("Статус пользователя \"Удален\"");
+            else return Ok("Статус пользователя \"Не удален\"");
         }
     }
 }
